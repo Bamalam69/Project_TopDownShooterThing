@@ -71,8 +71,8 @@ MonoBehaviour:
     i13: 180
     i14: 11
     i15: 142
-  m_ServerOnly: 0
-  m_LocalPlayerAuthority: 1
+  m_ServerOnly: 1
+  m_LocalPlayerAuthority: 0
 --- !u!114 &114967874542984206
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -88,3 +88,4 @@ MonoBehaviour:
   m4Prefab: {fileID: 1420831022960606, guid: d06b3205fd1676947985486300e73047, type: 2}
   microPrefab: {fileID: 1142322189103286, guid: 63ef8a1a3259e8e4a863e5c8cfb0ee67,
     type: 2}
+  houseRoot: {fileID: 0}

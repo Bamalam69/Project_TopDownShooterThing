@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-using DynamicLight2D;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -31,7 +30,6 @@ public class PlayerController : NetworkBehaviour
     public GameObject camInstance;
     public Camera[] cams;
 
-    private DynamicLight light2D;
     private AudioListener audListeners;
     private NetworkIdentity networkIdentity;
 
@@ -66,8 +64,6 @@ public class PlayerController : NetworkBehaviour
 
         audListeners = camInstance.GetComponentInChildren<AudioListener>();
 
-        //Enable 2DLight:
-        light2D = transform.Find("2DDLight").GetComponent<DynamicLight>();
         networkIdentity = GetComponent<NetworkIdentity>();
     }
 
@@ -81,13 +77,13 @@ public class PlayerController : NetworkBehaviour
             cam.enabled = isLocalPlayer;
         }
 
-        light2D.enabled = isLocalPlayer;
-
         camInstance.GetComponent<CameraController>().playerToFollow = this.transform;
         camInstance.transform.SetParent(null);
     }
 
+    #region Collision events
     void OnCollisionEnter2D(Collision2D col) {
+        if (!isLocalPlayer) return;
         if (col.gameObject.transform.CompareTag("Gun")) {
             if (col.transform.CompareTag("Gun") && !holdingGun && !col.gameObject.GetComponent<GunScript>().equipped && weaponHolding == null) {
                 CmdEquip(col.gameObject.GetComponent<NetworkIdentity>(), this.networkIdentity);
@@ -95,39 +91,56 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    void Update() {
+    void OnTriggerEnter2D(Collider2D col) {
         if (!isLocalPlayer) return;
-
-        //Get keyboard input
-        float _xMovement = Input.GetAxis("Horizontal");
-        float _yMovement = Input.GetAxis("Vertical");
-
-        movementVector = new Vector3(_xMovement, _yMovement);
-
-        //Get mouse rotation and calculate rotation
-        Rect rect = new Rect(0, 0, Screen.width, Screen.height);
-        if (rect.Contains(Input.mousePosition)) {
-            Vector3 dir = Input.mousePosition - cams[0].WorldToScreenPoint(transform.position);
-            angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        if (col.transform.CompareTag("TransCol")) {
+            LockOnRoof(col, 0.2f, 0.2f);
+            CameraLerpToHouse(col.transform, 0.2f, 4.0f);
         }
+    }
 
-        if (holdingGun) {
-            if (Input.GetMouseButton(0)) {
-                if ((weaponHolding.transform.name.Contains("AK")) || (weaponHolding.transform.name.Contains("M4"))) {
-                    if (Time.time - lastFired > 1 / akFireRate) {
-                        CmdShoot(this.networkIdentity, GetComponent<PlayerController>().cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
-                        lastFired = Time.time;
-                    }
-                } else if (weaponHolding.transform.name.Contains("Micro")) {
-                    if (Time.time - lastFired > 1 / microFireRate) {
-                        CmdShoot(this.networkIdentity, GetComponent<PlayerController>().cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
-                        lastFired = Time.time;
-                    }
-                }
+    void OnTriggerExit2D(Collider2D col) {
+        if (!isLocalPlayer) return;
+        if (col.transform.CompareTag("TransCol")) {
+            LockOnRoof(col, 0.2f, 1.0f);
+            CameraLerpToHouse(this.transform, 0.7f, 6.0f);
+        }
+    }
+
+    void Update() {
+        if (isLocalPlayer) {
+
+            //Get keyboard input
+            float _xMovement = Input.GetAxis("Horizontal");
+            float _yMovement = Input.GetAxis("Vertical");
+
+            movementVector = new Vector3(_xMovement, _yMovement);
+
+            //Get mouse rotation and calculate rotation
+            Rect rect = new Rect(0, 0, Screen.width, Screen.height);
+            if (rect.Contains(Input.mousePosition)) {
+                Vector3 dir = Input.mousePosition - cams[0].WorldToScreenPoint(transform.position);
+                angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
             }
 
-            if (Input.GetKeyDown(KeyCode.G)) {
-                CmdTempDrop(this.GetComponent<NetworkIdentity>());
+            if (holdingGun) {
+                if (Input.GetMouseButton(0)) {
+                    if ((weaponHolding.transform.name.Contains("AK")) || (weaponHolding.transform.name.Contains("M4"))) {
+                        if (Time.time - lastFired > 1 / akFireRate) {
+                            CmdShoot(this.networkIdentity, GetComponent<PlayerController>().cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
+                            lastFired = Time.time;
+                        }
+                    } else if (weaponHolding.transform.name.Contains("Micro")) {
+                        if (Time.time - lastFired > 1 / microFireRate) {
+                            CmdShoot(this.networkIdentity, GetComponent<PlayerController>().cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
+                            lastFired = Time.time;
+                        }
+                    }
+                }
+
+                if (Input.GetKeyDown(KeyCode.G)) {
+                    CmdTempDrop(this.GetComponent<NetworkIdentity>());
+                }
             }
         }
     }
@@ -137,6 +150,7 @@ public class PlayerController : NetworkBehaviour
         Move();
         Rotate();
     }
+    #endregion
 
     #endregion
 
@@ -261,15 +275,64 @@ public class PlayerController : NetworkBehaviour
         weaponsScript.colToStopIgnoring = this.polCol2D;
         weaponsScript.justDropped = true;
 
+        //**Can't pick back up because it is still ignoring cols
+
         Rigidbody2D weaponsRb = playersWeapon.GetComponent<Rigidbody2D>();
-        weaponsRb.AddForce(Vector2.right * 2000000.0f);
-        weaponsRb.AddTorque((Random.Range(0, 2) * 2 - 1) * 20000.0f);
+        weaponsRb.AddForce(this.transform.forward * 2000000.0f, ForceMode2D.Impulse);
+        weaponsRb.angularVelocity = 0.0f;
+        weaponsRb.AddTorque((Random.Range(0, 2) * 2 - 1) * 20000.0f, ForceMode2D.Impulse);
 
         playersController.weaponHolding = null;
     }
 
     #endregion
 
+    #endregion
+
+    #region HousEntering lerping
+    void LockOnRoof(Collider2D col, float time, float amount) {
+        //Get the parent gameobject attached to the col.
+        //Get the sprite renderer that is responsible for rendering the roof.
+        //Apply transparency.
+
+        GameObject rootObject = col.transform.parent.gameObject;
+        SpriteRenderer[] spriteRenderers = rootObject.GetComponentsInChildren<SpriteRenderer>();
+
+        SpriteRenderer roofRenderer = null;
+
+        foreach (SpriteRenderer spr in spriteRenderers) {
+            if (spr.gameObject.transform.CompareTag("Roof")) {
+                roofRenderer = spr;
+                break;
+            }
+        }
+
+        StartCoroutine(lerpTransparency(roofRenderer, time, amount));
+    }
+
+    private IEnumerator lerpTransparency(SpriteRenderer spr, float time, float amount) {
+
+        if (spr == null) {
+            Debug.Log("No spr!");
+            yield return null;
+        }
+
+        float elapsedTime = 0;
+
+        while (elapsedTime < time) {
+            spr.color = Color.Lerp(spr.color, new Color(1.0f, 1.0f, 1.0f, amount), (elapsedTime / time));
+            elapsedTime += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+    }
+
+    void CameraLerpToHouse(Transform posToLerpTo, float time, float size) {
+        CameraController camsController = camInstance.GetComponent<CameraController>();
+
+        camsController.playerToFollow = posToLerpTo;
+        camsController.timeToLerp = time;
+        camsController.size = size;
+    }
     #endregion
 
     #endregion

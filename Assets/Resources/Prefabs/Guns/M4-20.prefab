@@ -57,8 +57,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 0.65
-  m_LinearDrag: 6
-  m_AngularDrag: 8
+  m_LinearDrag: 0
+  m_AngularDrag: 0
   m_GravityScale: 1
   m_Material: {fileID: 0}
   m_Interpolate: 0
@@ -81,7 +81,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.28, y: 0.48}
+    oldSize: {x: 0.9846154, y: 0.36923078}
     newSize: {x: 0.64, y: 0.18}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -180,7 +180,7 @@ MonoBehaviour:
   equipped: 0
   gunType: 1
   justDropped: 0
-  colToIgnore: {fileID: 0}
+  colToStopIgnoring: {fileID: 0}
 --- !u!212 &212002262823701118
 SpriteRenderer:
   m_ObjectHideFlags: 1

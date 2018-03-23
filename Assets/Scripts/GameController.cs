@@ -14,10 +14,13 @@ public class GameController : NetworkBehaviour
     [SerializeField] private GameObject microPrefab;
     private GameObject microInstance;
 
+    [SerializeField] private GameObject houseRoot;
+
     public override void OnStartServer() {
         DontDestroyOnLoad(this.gameObject);
         Debug.Log("Spawning weapons!");
         SpawnWeapons();
+        SpawnWindows();
     }
 
     void SpawnWeapons() {
@@ -29,6 +32,10 @@ public class GameController : NetworkBehaviour
 
         microInstance = (GameObject)Instantiate(microPrefab);
         NetworkServer.Spawn(microInstance);
+    }
+
+    void SpawnWindows() {
+        houseRoot.GetComponent<WindowSpawner>().SpawnWindows();
     }
 
 }

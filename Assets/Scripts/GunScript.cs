@@ -60,10 +60,11 @@ public class GunScript : NetworkBehaviour
             }
         } else {
             playerEquippedTo = null;
-            //if (justDropped && rb.velocity.magnitude < 2.5f) {
-            //    StopIgnoringCols();
-            //    justDropped = false;
-            //}
+            rb.angularVelocity = 0.0f;
+           if (justDropped) {
+               Invoke("StopIgnoringCols", 2.0f);
+               justDropped = false;
+           }
         }
     }
 

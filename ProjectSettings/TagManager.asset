@@ -8,9 +8,10 @@ TagManager:
   - onlyTrigger
   - vehicle
   - gun
-  - ghost
-  - 2ddl
-  - deadTrigger
+  - TransCol
+  - Roof
+  - Window
+  - bullet
   layers:
   - Default
   - TransparentFX
@@ -24,7 +25,7 @@ TagManager:
   - Guns
   - bullets
   - hiddenObjs
-  - background
+  - roofs
   - wallCol
   - 
   - 
