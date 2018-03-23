@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using TMPro;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -76,6 +77,8 @@ public class PlayerController : NetworkBehaviour
         foreach (Camera cam in cams) {
             cam.enabled = isLocalPlayer;
         }
+
+        nameCanvas.GetComponentInChildren<TextMeshProUGUI>().text = this.netId.ToString();
 
         camInstance.GetComponent<CameraController>().playerToFollow = this.transform;
         camInstance.transform.SetParent(null);
@@ -199,6 +202,7 @@ public class PlayerController : NetworkBehaviour
         Rigidbody2D weaponsRigidbody = weaponTouched.GetComponent<Rigidbody2D>();
         weaponsRigidbody.isKinematic = true;
         weaponsRigidbody.velocity = Vector2.zero;
+        weaponsRigidbody.angularVelocity = 0.0f;
 
         //position setting:
         weaponTouched.transform.localPosition = weaponPosition;
@@ -274,8 +278,6 @@ public class PlayerController : NetworkBehaviour
 
         weaponsScript.colToStopIgnoring = this.polCol2D;
         weaponsScript.justDropped = true;
-
-        //**Can't pick back up because it is still ignoring cols
 
         Rigidbody2D weaponsRb = playersWeapon.GetComponent<Rigidbody2D>();
         weaponsRb.isKinematic = false;

@@ -50,17 +50,17 @@ public class GunScript : NetworkBehaviour
         if (equipped) {
             if (transform.parent == null) Debug.LogError("Equipped with no parent!");
 
-            Rect rect = new Rect(0, 0, Screen.width, Screen.height);
-            if (rect.Contains(Input.mousePosition) && cam != null) {
-                Vector2 target = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y));
-                Vector2 myPos = new Vector2(transform.position.x, transform.position.y);
-                Vector2 direction = (target - myPos).normalized;
-
-                rotation = Quaternion.Euler(0, 0, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
-            }
+            //Rect rect = new Rect(0, 0, Screen.width, Screen.height);
+            //if (rect.Contains(Input.mousePosition) && cam != null) {
+            //    Vector2 target = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y));
+            //    Vector2 myPos = new Vector2(transform.position.x, transform.position.y);
+            //    Vector2 direction = (target - myPos).normalized;
+            //
+            //    rotation = Quaternion.Euler(0, 0, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
+            //}
         } else {
             playerEquippedTo = null;
-           if (justDropped && rb.velocity.magnitude < 2.0f) {
+           if (justDropped && rb.velocity.magnitude < 1.5f) {
                StopIgnoringCols();
                justDropped = false;
            }
@@ -78,7 +78,7 @@ public class GunScript : NetworkBehaviour
 
 #region custom Functions
     void RotateGun() {
-        rb.MoveRotation(rotation.eulerAngles.z);
+        //rb.MoveRotation(rotation.eulerAngles.z);
     }
 
     public void StopIgnoringCols() {
