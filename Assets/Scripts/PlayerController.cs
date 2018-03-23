@@ -278,9 +278,9 @@ public class PlayerController : NetworkBehaviour
         //**Can't pick back up because it is still ignoring cols
 
         Rigidbody2D weaponsRb = playersWeapon.GetComponent<Rigidbody2D>();
-        weaponsRb.AddForce(this.transform.forward * 2000000.0f, ForceMode2D.Impulse);
-        weaponsRb.angularVelocity = 0.0f;
-        weaponsRb.AddTorque((Random.Range(0, 2) * 2 - 1) * 20000.0f, ForceMode2D.Impulse);
+        weaponsRb.isKinematic = false;
+        weaponsRb.AddForce(transform.right * 15.0f, ForceMode2D.Impulse);
+        weaponsRb.AddTorque((Random.Range(0, 2) * 2 - 1) * 2.0f, ForceMode2D.Impulse);
 
         playersController.weaponHolding = null;
     }
