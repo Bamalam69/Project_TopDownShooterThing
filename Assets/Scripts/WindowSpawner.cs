@@ -6,6 +6,8 @@ using UnityEngine.Networking;
 public class WindowSpawner : NetworkBehaviour
 {
     [SerializeField] private GameObject[] windows;
+    private Rigidbody2D rb;
+    private Vector3 origin;
 
     public void SpawnWindows() { 
     GameObject windowInstance = (GameObject)Instantiate(windows[0], 

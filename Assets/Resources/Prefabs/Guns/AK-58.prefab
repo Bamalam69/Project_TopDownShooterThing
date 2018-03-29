@@ -134,15 +134,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_TransformSyncMode: 2
-  m_SendInterval: 0.041666668
+  m_SendInterval: 0.033333335
   m_SyncRotationAxis: 3
   m_RotationSyncCompression: 0
-  m_SyncSpin: 1
+  m_SyncSpin: 0
   m_MovementTheshold: 0.001
   m_VelocityThreshold: 0.0001
-  m_SnapThreshold: 5
+  m_SnapThreshold: 1
   m_InterpolateRotation: 1
-  m_InterpolateMovement: 8.54
+  m_InterpolateMovement: 1
 --- !u!114 &114749481794613950
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -175,8 +175,8 @@ MonoBehaviour:
   - {fileID: 21300010, guid: 4635fb4a4d4b5cf42b0f224a53fdb756, type: 3}
   - {fileID: 21300012, guid: 4635fb4a4d4b5cf42b0f224a53fdb756, type: 3}
   - {fileID: 21300014, guid: 4635fb4a4d4b5cf42b0f224a53fdb756, type: 3}
-  playerEquippedTo: {fileID: 0}
   playersPlayerController: {fileID: 0}
+  boxCol: {fileID: 0}
   equipped: 0
   gunType: 0
   justDropped: 0

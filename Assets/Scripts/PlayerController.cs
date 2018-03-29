@@ -184,8 +184,6 @@ public class PlayerController : NetworkBehaviour
 
         string objectName = weaponTouched.transform.name;
 
-        weaponTouched.transform.SetParent(playerThatCalled.transform);
-
         SpriteRenderer weaponRenderer = weaponTouched.GetComponent<SpriteRenderer>();
         GunScript weaponScript = weaponTouched.GetComponent<GunScript>();
 
@@ -200,21 +198,26 @@ public class PlayerController : NetworkBehaviour
         weaponRenderer.sortingOrder = 0;
 
         Rigidbody2D weaponsRigidbody = weaponTouched.GetComponent<Rigidbody2D>();
-        weaponsRigidbody.isKinematic = true;
-        weaponsRigidbody.velocity = Vector2.zero;
-        weaponsRigidbody.angularVelocity = 0.0f;
+        //weaponsRigidbody.isKinematic = true;
+        //weaponsRigidbody.velocity = Vector2.zero;
+        //weaponsRigidbody.angularVelocity = 0.0f;
 
-        //position setting:
-        weaponTouched.transform.localPosition = weaponPosition;
-        weaponTouched.transform.localRotation = Quaternion.identity;
+        weaponTouched.transform.position = playerThatCalled.transform.TransformPoint(weaponPosition);
+        weaponTouched.transform.rotation = playerThatCalled.transform.rotation;
 
-        weaponScript.cam = cams[0];
-        weaponScript.playerEquippedTo = playerThatCalled.transform;
+        FixedJoint2D joint = playerThatCalled.GetComponent<FixedJoint2D>();
+        joint.enabled = true;
+        joint.connectedBody = weaponsRigidbody;
+        joint.anchor = weaponTouched.transform.position;
+        joint.connectedAnchor = playerThatCalled.transform.position;
+
         weaponScript.playersPlayerController = playerThatCalled.GetComponent<PlayerController>();
 
-        Physics2D.IgnoreCollision(weaponTouched.GetComponent<BoxCollider2D>(), this.GetComponent<PolygonCollider2D>(), true);
+        weaponScript.cam = weaponScript.playersPlayerController.cams[0];
 
-        holdingGun = true;
+        Physics2D.IgnoreCollision(weaponTouched.GetComponent<BoxCollider2D>(), this.GetComponent<PolygonCollider2D>(), true);
+        weaponScript.boxCol.enabled = false;
+        weaponScript.playersPlayerController.holdingGun = true;
         weaponScript.equipped = true;
         playerThatCalled.GetComponent<PlayerController>().weaponHolding = weaponTouched;
     }
@@ -283,6 +286,9 @@ public class PlayerController : NetworkBehaviour
         weaponsRb.isKinematic = false;
         weaponsRb.AddForce(transform.right * 15.0f, ForceMode2D.Impulse);
         weaponsRb.AddTorque((Random.Range(0, 2) * 2 - 1) * 2.0f, ForceMode2D.Impulse);
+
+        FixedJoint2D joint = playerCallingObj.GetComponent<FixedJoint2D>();
+        joint.enabled = false;
 
         playersController.weaponHolding = null;
     }
