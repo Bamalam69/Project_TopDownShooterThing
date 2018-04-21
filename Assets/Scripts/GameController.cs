@@ -8,18 +8,19 @@ public class GameController : NetworkBehaviour
     #region vars
 
     [SerializeField] private GameObject akPrefab;
-    private GameObject akInstance;
+    private List<GameObject> akInstances = new List<GameObject>();
 
     [SerializeField] private GameObject m4Prefab;
-    private GameObject m4Instance;
+    private List<GameObject> m4Instances = new List<GameObject>();
 
     [SerializeField] private GameObject microPrefab;
-    private GameObject microInstance;
+    private List<GameObject> microInstances = new List<GameObject>();
 
     [SerializeField] private GameObject snipperPrefab;
-    private GameObject snipperInstance;
+    private List<GameObject> snipperInstances = new List<GameObject>();
 
     [SerializeField] private GameObject houseRoot;
+    [SerializeField] private List<GameObject> weaponSpawnerObjs = new List<GameObject>();
 
     #endregion
 
@@ -33,17 +34,46 @@ public class GameController : NetworkBehaviour
     }
 
     void SpawnWeapons() {
-        akInstance = (GameObject)Instantiate(akPrefab);
-        NetworkServer.Spawn(akInstance);
+        
+        //Collect all weaponspawners in weaponSpawnerScripts:
+        weaponSpawnerObjs.AddRange(GameObject.FindGameObjectsWithTag("WeaponSpawner"));
 
-        m4Instance = (GameObject)Instantiate(m4Prefab);
-        NetworkServer.Spawn(m4Instance);
+        foreach (GameObject weaponSpawnerObj in weaponSpawnerObjs) {
+            int weaponChance = Random.Range(1, 10);
+            if (weaponChance >= 1 && weaponChance <= 4) {
+                microInstances.Add((GameObject)Instantiate(microPrefab));
+                microInstances[microInstances.Count - 1].transform.position = weaponSpawnerObj.transform.position;
+                Debug.Log("Spawning Micro");
+            } else if (weaponChance >= 5 && weaponChance <= 7) {
+                m4Instances.Add((GameObject)Instantiate(m4Prefab));
+                m4Instances[m4Instances.Count - 1].transform.position = weaponSpawnerObj.transform.position;
+                Debug.Log("Spawning M4");
+            } else if (weaponChance >= 8 && weaponChance <= 9) {
+                akInstances.Add((GameObject)Instantiate(akPrefab));
+                akInstances[akInstances.Count - 1].transform.position = weaponSpawnerObj.transform.position;
+                Debug.Log("Spawning Ak");
+            } else if (weaponChance == 10) {
+                snipperInstances.Add((GameObject)Instantiate(akPrefab));
+                snipperInstances[snipperInstances.Count - 1].transform.position = weaponSpawnerObj.transform.position;
+                Debug.Log("Spawning Snipper");
+            }
+        }
 
-        microInstance = (GameObject)Instantiate(microPrefab);
-        NetworkServer.Spawn(microInstance);
+        foreach (GameObject weapon in microInstances) {
+            NetworkServer.Spawn(weapon);
+        }
 
-        snipperInstance = (GameObject)Instantiate(snipperPrefab);
-        NetworkServer.Spawn(snipperInstance);
+        foreach (GameObject weapon in akInstances) {
+            NetworkServer.Spawn(weapon);
+        }
+
+        foreach (GameObject weapon in m4Instances) {
+            NetworkServer.Spawn(weapon);
+        }
+
+        foreach(GameObject weapon in snipperInstances) {
+            NetworkServer.Spawn(weapon);
+        }
     }
 
     void SpawnWindows() {

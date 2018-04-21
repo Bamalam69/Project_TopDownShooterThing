@@ -5,13 +5,12 @@ TagManager:
   serializedVersion: 2
   tags:
   - Gun
-  - onlyTrigger
-  - vehicle
-  - gun
   - TransCol
   - Roof
   - Window
   - bullet
+  - WeaponSpawner
+  - House
   layers:
   - Default
   - TransparentFX

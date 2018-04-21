@@ -157,15 +157,15 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1436766900850678, guid: 2d001aceadb310c459a752d586b40b8e, type: 2}
-      propertyPath: m_Name
-      value: _GameManager
-      objectReference: {fileID: 0}
     - target: {fileID: 114967874542984206, guid: 2d001aceadb310c459a752d586b40b8e,
         type: 2}
       propertyPath: houseRoot
       value: 
       objectReference: {fileID: 270887937}
+    - target: {fileID: 1436766900850678, guid: 2d001aceadb310c459a752d586b40b8e, type: 2}
+      propertyPath: m_Name
+      value: _GameManager
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2d001aceadb310c459a752d586b40b8e, type: 2}
   m_IsPrefabParent: 0
