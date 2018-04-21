@@ -5,7 +5,9 @@ using UnityEngine.Networking;
 
 public class GunScript : NetworkBehaviour
 {
+
 #region vars
+
     private Rigidbody2D rb;
     private Transform playerParent;
     public Camera cam;
@@ -13,6 +15,7 @@ public class GunScript : NetworkBehaviour
     public Sprite[] akSprites;
     public Sprite[] m4Sprites;
     public Sprite[] microSprites;
+    public Sprite[] snipperSprites;
 
     //public Transform playerEquippedTo;
     public PlayerController playersPlayerController;
@@ -21,12 +24,12 @@ public class GunScript : NetworkBehaviour
 
     public bool equipped;
 
-    public enum gunTypes
+    public enum GunTypes
     {
         AK, M4, Micro, Snipper
     }
 
-    public gunTypes gunType;
+    public GunTypes gunType;
 
     public bool justDropped;
     public PolygonCollider2D colToStopIgnoring;
@@ -61,5 +64,6 @@ public class GunScript : NetworkBehaviour
         Physics2D.IgnoreCollision(this.GetComponent<BoxCollider2D>(), colToStopIgnoring, false);
         boxCol.enabled = true;
     }
+
 #endregion
 }

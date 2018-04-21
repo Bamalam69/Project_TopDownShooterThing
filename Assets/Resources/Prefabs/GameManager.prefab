@@ -88,4 +88,6 @@ MonoBehaviour:
   m4Prefab: {fileID: 1420831022960606, guid: d06b3205fd1676947985486300e73047, type: 2}
   microPrefab: {fileID: 1142322189103286, guid: 63ef8a1a3259e8e4a863e5c8cfb0ee67,
     type: 2}
+  snipperPrefab: {fileID: 1012920446888678, guid: cbed90a72d838294b8e98a7237f9f3ec,
+    type: 2}
   houseRoot: {fileID: 0}

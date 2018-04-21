@@ -387,8 +387,8 @@ MonoBehaviour:
   positionSnapThreshold: 8
   rotationSnapThreshold: 60
   scaleSnapThreshold: 3
-  positionLerpSpeed: 0.429
-  rotationLerpSpeed: 0.429
+  positionLerpSpeed: 0.75
+  rotationLerpSpeed: 0.75
   scaleLerpSpeed: 0
   syncPosition: 1
   syncRotation: 6

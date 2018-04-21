@@ -112,6 +112,8 @@ public class PlayerController : NetworkBehaviour
 
     #endregion
 
+    #region update functions
+
     void Update() {
         if (isLocalPlayer) {
 
@@ -143,6 +145,12 @@ public class PlayerController : NetworkBehaviour
                     }
                 }
 
+                if (Input.GetMouseButtonDown(0)) {
+                    if (weaponHolding.transform.name.Contains("Snipper")) {
+                        CmdShoot(this.networkIdentity, cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
+                    }
+                }
+
                 if (Input.GetKeyDown(KeyCode.G)) {
                     CmdTempDrop(this.GetComponent<NetworkIdentity>(), cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
                 }
@@ -155,6 +163,8 @@ public class PlayerController : NetworkBehaviour
         Move();
         Rotate();
     }
+
+    #endregion
 
     #endregion
 
@@ -188,12 +198,14 @@ public class PlayerController : NetworkBehaviour
         SpriteRenderer weaponRenderer = weaponTouched.GetComponent<SpriteRenderer>();
         GunScript weaponScript = weaponTouched.GetComponent<GunScript>();
 
-        if (weaponScript.gunType == GunScript.gunTypes.AK) {
+        if (weaponScript.gunType == GunScript.GunTypes.AK) {
             weaponRenderer.sprite = weaponScript.akSprites[1];
-        } else if (weaponScript.gunType == GunScript.gunTypes.M4) {
+        } else if (weaponScript.gunType == GunScript.GunTypes.M4) {
             weaponRenderer.sprite = weaponScript.m4Sprites[1];
-        } else if (weaponScript.gunType == GunScript.gunTypes.Micro) {
+        } else if (weaponScript.gunType == GunScript.GunTypes.Micro) {
             weaponRenderer.sprite = weaponScript.microSprites[1];
+        } else if (weaponScript.gunType == GunScript.GunTypes.Snipper) {
+            weaponRenderer.sprite = weaponScript.snipperSprites[1];
         }
 
         weaponRenderer.sortingOrder = 0;
@@ -276,6 +288,8 @@ public class PlayerController : NetworkBehaviour
             playersWeapon.GetComponent<SpriteRenderer>().sprite = weaponsScript.m4Sprites[0];
         } else if (playersWeapon.transform.name.Contains("Micro")) {
             playersWeapon.GetComponent<SpriteRenderer>().sprite = weaponsScript.microSprites[0];
+        } else if (playersWeapon.transform.name.Contains("Snipper")) {
+            playersWeapon.GetComponent<SpriteRenderer>().sprite = weaponsScript.snipperSprites[0];
         }
 
         playersController.holdingGun = false;
@@ -284,8 +298,8 @@ public class PlayerController : NetworkBehaviour
         weaponsScript.justDropped = true;
 
         //Calculate direction
-        Vector2 myPos = new Vector2(playersController.weaponHolding.transform.position.x, playersController.weaponHolding.transform.position.y);
-        Vector2 direction = (target - myPos).normalized;
+        Vector2 playerPos = new Vector2(playersController.weaponHolding.transform.position.x, playersController.weaponHolding.transform.position.y);
+        Vector2 direction = (target - playerPos).normalized;
 
         FixedJoint2D joint = playerCallingObj.GetComponent<FixedJoint2D>();
         Destroy(joint);

@@ -14,6 +14,9 @@ public class GameController : NetworkBehaviour
     [SerializeField] private GameObject microPrefab;
     private GameObject microInstance;
 
+    [SerializeField] private GameObject snipperPrefab;
+    private GameObject snipperInstance;
+
     [SerializeField] private GameObject houseRoot;
 
     public override void OnStartServer() {
@@ -32,10 +35,12 @@ public class GameController : NetworkBehaviour
 
         microInstance = (GameObject)Instantiate(microPrefab);
         NetworkServer.Spawn(microInstance);
+
+        snipperInstance = (GameObject)Instantiate(snipperPrefab);
+        NetworkServer.Spawn(snipperInstance);
     }
 
     void SpawnWindows() {
         houseRoot.GetComponent<WindowSpawner>().SpawnWindows();
     }
-
 }

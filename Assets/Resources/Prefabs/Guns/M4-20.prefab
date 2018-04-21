@@ -195,6 +195,13 @@ MonoBehaviour:
   - {fileID: 21300010, guid: 4635fb4a4d4b5cf42b0f224a53fdb756, type: 3}
   - {fileID: 21300012, guid: 4635fb4a4d4b5cf42b0f224a53fdb756, type: 3}
   - {fileID: 21300014, guid: 4635fb4a4d4b5cf42b0f224a53fdb756, type: 3}
+  snipperSprites:
+  - {fileID: 21300000, guid: 7e54478d7ba789d4fb02977f942715f5, type: 3}
+  - {fileID: 21300002, guid: 7e54478d7ba789d4fb02977f942715f5, type: 3}
+  - {fileID: 21300004, guid: 7e54478d7ba789d4fb02977f942715f5, type: 3}
+  - {fileID: 21300006, guid: 7e54478d7ba789d4fb02977f942715f5, type: 3}
+  - {fileID: 21300008, guid: 7e54478d7ba789d4fb02977f942715f5, type: 3}
+  - {fileID: 21300010, guid: 7e54478d7ba789d4fb02977f942715f5, type: 3}
   playersPlayerController: {fileID: 0}
   boxCol: {fileID: 0}
   equipped: 0
