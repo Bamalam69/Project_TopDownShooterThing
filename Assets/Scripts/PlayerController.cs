@@ -110,6 +110,8 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    #endregion
+
     void Update() {
         if (isLocalPlayer) {
 
@@ -130,19 +132,19 @@ public class PlayerController : NetworkBehaviour
                 if (Input.GetMouseButton(0)) {
                     if ((weaponHolding.transform.name.Contains("AK")) || (weaponHolding.transform.name.Contains("M4"))) {
                         if (Time.time - lastFired > 1 / akFireRate) {
-                            CmdShoot(this.networkIdentity, GetComponent<PlayerController>().cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
+                            CmdShoot(this.networkIdentity, cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
                             lastFired = Time.time;
                         }
                     } else if (weaponHolding.transform.name.Contains("Micro")) {
                         if (Time.time - lastFired > 1 / microFireRate) {
-                            CmdShoot(this.networkIdentity, GetComponent<PlayerController>().cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
+                            CmdShoot(this.networkIdentity, cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
                             lastFired = Time.time;
                         }
                     }
                 }
 
                 if (Input.GetKeyDown(KeyCode.G)) {
-                    CmdTempDrop(this.GetComponent<NetworkIdentity>());
+                    CmdTempDrop(this.GetComponent<NetworkIdentity>(), cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
                 }
             }
         }
@@ -153,7 +155,6 @@ public class PlayerController : NetworkBehaviour
         Move();
         Rotate();
     }
-    #endregion
 
     #endregion
 
@@ -206,7 +207,9 @@ public class PlayerController : NetworkBehaviour
         weaponTouched.transform.rotation = playerThatCalled.transform.rotation;
 
         FixedJoint2D joint = playerThatCalled.GetComponent<FixedJoint2D>();
+        if (joint == null) joint = playerThatCalled.AddComponent<FixedJoint2D>();
         joint.enabled = true;
+        joint.autoConfigureConnectedAnchor = false;
         joint.connectedBody = weaponsRigidbody;
         joint.anchor = weaponTouched.transform.position;
         joint.connectedAnchor = playerThatCalled.transform.position;
@@ -252,19 +255,17 @@ public class PlayerController : NetworkBehaviour
     #region Dropping functions
 
     [Command]
-    void CmdTempDrop(NetworkIdentity gunObject) {
-        RpcTempDrop(gunObject);
+    void CmdTempDrop(NetworkIdentity gunObject, Vector2 target) {
+        RpcTempDrop(gunObject, target);
     }
 
     [ClientRpc]
-    void RpcTempDrop(NetworkIdentity playerCalling) {
+    void RpcTempDrop(NetworkIdentity playerCalling, Vector2 target) {
         GameObject playerCallingObj = ClientScene.FindLocalObject(playerCalling.netId);
 
         //Get the playerCalling's weaponHolding variable.
         PlayerController playersController = playerCallingObj.GetComponent<PlayerController>();
         GameObject playersWeapon = playersController.weaponHolding;
-
-        playersWeapon.transform.SetParent(null);
 
         GunScript weaponsScript = playersWeapon.GetComponent<GunScript>();
         weaponsScript.equipped = false;
@@ -279,12 +280,20 @@ public class PlayerController : NetworkBehaviour
 
         playersController.holdingGun = false;
 
-        weaponsScript.colToStopIgnoring = this.polCol2D;
+        weaponsScript.colToStopIgnoring = playersController.polCol2D;
         weaponsScript.justDropped = true;
+
+        //Calculate direction
+        Vector2 myPos = new Vector2(playersController.weaponHolding.transform.position.x, playersController.weaponHolding.transform.position.y);
+        Vector2 direction = (target - myPos).normalized;
+
+        Quaternion rotation = Quaternion.Euler(0, 0, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
+
+        //projectile.GetComponent<Rigidbody2D>().velocity = direction * 1500f * Time.deltaTime;
 
         Rigidbody2D weaponsRb = playersWeapon.GetComponent<Rigidbody2D>();
         weaponsRb.isKinematic = false;
-        weaponsRb.AddForce(transform.right * 15.0f, ForceMode2D.Impulse);
+        weaponsRb.AddForce(direction * 15.0f, ForceMode2D.Impulse);
         weaponsRb.AddTorque((Random.Range(0, 2) * 2 - 1) * 2.0f, ForceMode2D.Impulse);
 
         FixedJoint2D joint = playerCallingObj.GetComponent<FixedJoint2D>();
