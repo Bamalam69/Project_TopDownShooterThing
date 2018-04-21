@@ -34,9 +34,11 @@ public class GunScript : NetworkBehaviour
     public bool justDropped;
     public PolygonCollider2D colToStopIgnoring;
 
+    private Quaternion angle;
+
 #endregion
 
-#region compulsory functions
+    #region compulsory functions
 
     void Awake() {
         rb = GetComponent<Rigidbody2D>();
@@ -48,6 +50,13 @@ public class GunScript : NetworkBehaviour
     void Update() {
         //Check for a parent. If so, check if mouse is in screen. If so, get angle to point the gun toward.
         if (equipped) {
+            //Calculate direction to aim at:
+            Vector2 target = cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y));
+
+            Vector2 myPos = new Vector2(transform.position.x, transform.position.y);
+            Vector2 direction = (target - myPos).normalized;
+
+            angle = Quaternion.Euler(0, 0, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
         } else {
             //playerEquippedTo = null;
            if (justDropped && rb.velocity.magnitude < 1.5f) {
@@ -61,8 +70,11 @@ public class GunScript : NetworkBehaviour
 #region custom Functions
 
     public void StopIgnoringCols() {
-        Physics2D.IgnoreCollision(this.GetComponent<BoxCollider2D>(), colToStopIgnoring, false);
-        boxCol.enabled = true;
+        Physics2D.IgnoreCollision(boxCol, colToStopIgnoring, false);
+    }
+
+    private void Rotate() {
+        rb.MoveRotation(angle.eulerAngles.z);
     }
 
 #endregion

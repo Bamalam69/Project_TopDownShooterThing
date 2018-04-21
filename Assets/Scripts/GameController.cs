@@ -5,6 +5,8 @@ using UnityEngine.Networking;
 
 public class GameController : NetworkBehaviour
 {
+    #region vars
+
     [SerializeField] private GameObject akPrefab;
     private GameObject akInstance;
 
@@ -18,6 +20,10 @@ public class GameController : NetworkBehaviour
     private GameObject snipperInstance;
 
     [SerializeField] private GameObject houseRoot;
+
+    #endregion
+
+    #region funcs
 
     public override void OnStartServer() {
         DontDestroyOnLoad(this.gameObject);
@@ -43,4 +49,7 @@ public class GameController : NetworkBehaviour
     void SpawnWindows() {
         houseRoot.GetComponent<WindowSpawner>().SpawnWindows();
     }
+
+    #endregion
+
 }

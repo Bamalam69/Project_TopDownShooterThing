@@ -20,6 +20,12 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private GameObject m4Prefab;
     [SerializeField] private GameObject microPrefab;
 
+    private Vector2 akAnchor = new Vector2(-0.02f, 0.01f);
+    private Vector2 akConnectedAnchor = new Vector2(-0.08f, 0.17f);
+
+    private Vector2 microAnchor = new Vector2(0.025f, 0.003f);
+    private Vector2 microConnectedAnchor = new Vector2(-0.15f, 0.17f);
+
     private PolygonCollider2D polCol2D;
 
     //private GameObject weaponInstance;
@@ -223,8 +229,8 @@ public class PlayerController : NetworkBehaviour
         joint.enabled = true;
         joint.autoConfigureConnectedAnchor = false;
         joint.connectedBody = weaponsRigidbody;
-        joint.anchor = weaponTouched.transform.position;
-        joint.connectedAnchor = playerThatCalled.transform.position;
+        joint.anchor = new Vector2(0.0f, -0.2f);
+        joint.connectedAnchor = Vector2.zero;
 
         weaponScript.playersPlayerController = playerThatCalled.GetComponent<PlayerController>();
 
@@ -296,6 +302,7 @@ public class PlayerController : NetworkBehaviour
 
         weaponsScript.colToStopIgnoring = playersController.polCol2D;
         weaponsScript.justDropped = true;
+        weaponsScript.boxCol.enabled = true;
 
         //Calculate direction
         Vector2 playerPos = new Vector2(playersController.weaponHolding.transform.position.x, playersController.weaponHolding.transform.position.y);
