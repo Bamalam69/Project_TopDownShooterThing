@@ -287,17 +287,13 @@ public class PlayerController : NetworkBehaviour
         Vector2 myPos = new Vector2(playersController.weaponHolding.transform.position.x, playersController.weaponHolding.transform.position.y);
         Vector2 direction = (target - myPos).normalized;
 
-        Quaternion rotation = Quaternion.Euler(0, 0, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
-
-        //projectile.GetComponent<Rigidbody2D>().velocity = direction * 1500f * Time.deltaTime;
+        FixedJoint2D joint = playerCallingObj.GetComponent<FixedJoint2D>();
+        Destroy(joint);
 
         Rigidbody2D weaponsRb = playersWeapon.GetComponent<Rigidbody2D>();
         weaponsRb.isKinematic = false;
         weaponsRb.AddForce(direction * 15.0f, ForceMode2D.Impulse);
         weaponsRb.AddTorque((Random.Range(0, 2) * 2 - 1) * 2.0f, ForceMode2D.Impulse);
-
-        FixedJoint2D joint = playerCallingObj.GetComponent<FixedJoint2D>();
-        joint.enabled = false;
 
         playersController.weaponHolding = null;
     }
