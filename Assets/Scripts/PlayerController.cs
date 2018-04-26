@@ -104,7 +104,7 @@ public class PlayerController : NetworkBehaviour
         if (!isLocalPlayer) return;
         if (col.transform.CompareTag("TransCol")) {
             LockOnRoof(col, 0.2f, 0.2f);
-            CameraLerpToHouse(col.transform, 0.2f, 4.0f);
+            //CameraLerpToHouse(col.transform, 0.2f, 4.0f);
         }
     }
 
