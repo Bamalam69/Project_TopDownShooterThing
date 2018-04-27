@@ -15,6 +15,7 @@ public class PlayerController : NetworkBehaviour
     private float angle;
     private RectTransform nameCanvas;
     [SerializeField] private TextMeshProUGUI ammoText;
+    [SerializeField] private Image reloadCircle;
 
     [SerializeField] private GameObject bulletPrefab;
 
@@ -149,7 +150,7 @@ public class PlayerController : NetworkBehaviour
             }
 
             if (holdingGun) {
-                if (Input.GetMouseButton(0)) {
+                if (Input.GetMouseButton(0) && weaponsGunScript.notReloading) {
                     if (weaponsGunScript.clipAmmoCount > 0) {
                         if ((weaponHolding.transform.name.Contains("AK")) || (weaponHolding.transform.name.Contains("M4"))) {
                             if (Time.time - lastFired > 1 / akFireRate) {
@@ -165,6 +166,12 @@ public class PlayerController : NetworkBehaviour
                     }
                 }
 
+                if (Input.GetKeyDown(KeyCode.R) && weaponsGunScript.otherAmmoCount > 0) {
+                    weaponsGunScript.notReloading = false;
+                    StartCoroutine(LerpReloadCircle(weaponsGunScript.reloadTime));
+                    Reload();
+                }
+
                 if (Input.GetMouseButtonDown(0)) {
                     if (weaponsGunScript.clipAmmoCount > 0) {
                         if (weaponHolding.transform.name.Contains("Snipper")) {
@@ -177,7 +184,7 @@ public class PlayerController : NetworkBehaviour
                     CmdTempDrop(this.networkIdentity, cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
                 }
 
-                ammoText.text = "Ammo: " + weaponsGunScript.clipAmmoCount + " Rest: " + weaponsGunScript.totalAmmoCount;
+                ammoText.text = "Ammo: " + weaponsGunScript.clipAmmoCount + " Rest: " + weaponsGunScript.otherAmmoCount;
 
             } else {
                 ammoText.text = "";
@@ -266,6 +273,8 @@ public class PlayerController : NetworkBehaviour
 
         playerThatCalled.GetComponent<PlayerController>().weaponHolding = weaponTouched;
         playerThatCalled.GetComponent<PlayerController>().weaponsGunScript = weaponScript;
+
+        weaponScript.notReloading = true;
     }
 
     #endregion
@@ -400,6 +409,39 @@ public class PlayerController : NetworkBehaviour
         camsController.size = size;
     }
     #endregion
+
+    void Reload() {
+        float ammoToAdd = weaponsGunScript.clipSize - weaponsGunScript.clipAmmoCount;
+
+        if (weaponsGunScript.otherAmmoCount < ammoToAdd) {
+            weaponsGunScript.clipAmmoCount += weaponsGunScript.otherAmmoCount;
+            weaponsGunScript.otherAmmoCount -= weaponsGunScript.otherAmmoCount;
+        } else {
+            weaponsGunScript.clipAmmoCount += ammoToAdd;
+            weaponsGunScript.otherAmmoCount -= ammoToAdd;
+        }
+    }
+
+    private IEnumerator LerpReloadCircle(float time) {
+
+        float elapsedTime = 0;
+
+        while (elapsedTime < time) {
+            if (reloadCircle.fillAmount != 1.0f) {
+                reloadCircle.fillAmount = Mathf.Lerp(reloadCircle.fillAmount, 1.0f, (elapsedTime / time));
+                elapsedTime += Time.deltaTime;
+                yield return new WaitForEndOfFrame();
+            } else {
+                weaponsGunScript.notReloading = true;
+                reloadCircle.fillAmount = 0.0f;
+
+                Reload();
+                break;
+            }
+        }
+
+        
+    }
 
     #endregion
 }

@@ -37,9 +37,12 @@ public class GunScript : NetworkBehaviour
     private Quaternion angle;
 
     [SyncVar] public float clipAmmoCount;
-    [SyncVar] public float totalAmmoCount;
+    [SyncVar] public float otherAmmoCount;
+    [SyncVar] public float clipSize;
+    [SyncVar] public float reloadTime;
+    [SyncVar] public bool notReloading;
 
-#endregion
+    #endregion
 
     #region compulsory functions
 
@@ -50,11 +53,14 @@ public class GunScript : NetworkBehaviour
         justDropped = false;
 
         if (gunType == GunTypes.AK || gunType == GunTypes.M4) {
-            clipAmmoCount = 30;
+            clipAmmoCount = clipSize = 30;
+            reloadTime = 1.5f;
         } else if (gunType == GunTypes.Micro) {
-            clipAmmoCount = 25;
+            clipAmmoCount = clipSize = 25;
+            reloadTime = 0.5f;
         } else if (gunType == GunTypes.Snipper) {
-            clipAmmoCount = 5;
+            clipAmmoCount = clipSize = 5;
+            reloadTime = 2.5f;
         }
     }
 
