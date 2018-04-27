@@ -30,12 +30,11 @@ public class GameController : NetworkBehaviour
         DontDestroyOnLoad(this.gameObject);
         Debug.Log("Spawning weapons!");
         SpawnWeapons();
-        SpawnWindows();
+        //SpawnWindows();
     }
 
     void SpawnWeapons() {
-        
-        //Collect all weaponspawners in weaponSpawnerScripts:
+
         weaponSpawnerObjs.AddRange(GameObject.FindGameObjectsWithTag("WeaponSpawner"));
 
         foreach (GameObject weaponSpawnerObj in weaponSpawnerObjs) {
@@ -43,19 +42,15 @@ public class GameController : NetworkBehaviour
             if (weaponChance >= 1 && weaponChance <= 4) {
                 microInstances.Add((GameObject)Instantiate(microPrefab));
                 microInstances[microInstances.Count - 1].transform.position = weaponSpawnerObj.transform.position;
-                Debug.Log("Spawning Micro");
             } else if (weaponChance >= 5 && weaponChance <= 7) {
                 m4Instances.Add((GameObject)Instantiate(m4Prefab));
                 m4Instances[m4Instances.Count - 1].transform.position = weaponSpawnerObj.transform.position;
-                Debug.Log("Spawning M4");
             } else if (weaponChance >= 8 && weaponChance <= 9) {
                 akInstances.Add((GameObject)Instantiate(akPrefab));
                 akInstances[akInstances.Count - 1].transform.position = weaponSpawnerObj.transform.position;
-                Debug.Log("Spawning Ak");
             } else if (weaponChance == 10) {
                 snipperInstances.Add((GameObject)Instantiate(akPrefab));
                 snipperInstances[snipperInstances.Count - 1].transform.position = weaponSpawnerObj.transform.position;
-                Debug.Log("Spawning Snipper");
             }
         }
 
@@ -71,14 +66,14 @@ public class GameController : NetworkBehaviour
             NetworkServer.Spawn(weapon);
         }
 
-        foreach(GameObject weapon in snipperInstances) {
+        foreach (GameObject weapon in snipperInstances) {
             NetworkServer.Spawn(weapon);
         }
     }
 
-    void SpawnWindows() {
-        houseRoot.GetComponent<WindowSpawner>().SpawnWindows();
-    }
+    //void SpawnWindows() {
+    //    houseRoot.GetComponent<WindowSpawner>().SpawnWindows();
+    //}
 
     #endregion
 

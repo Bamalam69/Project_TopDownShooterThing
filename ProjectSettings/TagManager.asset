@@ -11,6 +11,8 @@ TagManager:
   - bullet
   - WeaponSpawner
   - House
+  - PlayerAmmoText
+  - Ammo
   layers:
   - Default
   - TransparentFX

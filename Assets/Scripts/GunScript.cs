@@ -36,6 +36,9 @@ public class GunScript : NetworkBehaviour
 
     private Quaternion angle;
 
+    [SyncVar] public float clipAmmoCount;
+    [SyncVar] public float totalAmmoCount;
+
 #endregion
 
     #region compulsory functions
@@ -45,11 +48,24 @@ public class GunScript : NetworkBehaviour
         
         boxCol = GetComponent<BoxCollider2D>();
         justDropped = false;
+
+        if (gunType == GunTypes.AK || gunType == GunTypes.M4) {
+            clipAmmoCount = 30;
+        } else if (gunType == GunTypes.Micro) {
+            clipAmmoCount = 25;
+        } else if (gunType == GunTypes.Snipper) {
+            clipAmmoCount = 5;
+        }
     }
 
     void Update() {
         //Check for a parent. If so, check if mouse is in screen. If so, get angle to point the gun toward.
         if (equipped) {
+            if (!playersPlayerController.isLocalPlayer) {
+                transform.right = playersPlayerController.transform.right;
+                return;
+            }
+
             //Calculate direction to aim at:
             Vector2 target = cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y));
 
@@ -60,7 +76,7 @@ public class GunScript : NetworkBehaviour
         } else {
             //playerEquippedTo = null;
            if (justDropped && rb.velocity.magnitude < 1.5f) {
-               StopIgnoringCols();
+                CmdStopIgnoringCols(this.netId, playersPlayerController.netId);
                justDropped = false;
            }
         }
@@ -69,8 +85,24 @@ public class GunScript : NetworkBehaviour
 
 #region custom Functions
 
-    public void StopIgnoringCols() {
-        Physics2D.IgnoreCollision(boxCol, colToStopIgnoring, false);
+    [Command]
+    private void CmdStopIgnoringCols(NetworkInstanceId objCalling, NetworkInstanceId objToStopIgnoring) {
+        RpcStopIgnoringCols(objCalling, objToStopIgnoring);
+    }
+
+    [ClientRpc]
+    public void RpcStopIgnoringCols(NetworkInstanceId objCalling, NetworkInstanceId objToStopIgnoring) {
+        BoxCollider2D objsCallingsBoxCol = ClientScene.FindLocalObject(objCalling).GetComponent<BoxCollider2D>();
+        PolygonCollider2D colToStopIgnore = ClientScene.FindLocalObject(objToStopIgnoring).GetComponent<PolygonCollider2D>();
+
+        Physics2D.IgnoreCollision(objsCallingsBoxCol, colToStopIgnore, false);
+    }
+
+    private void FixedUpdate() {
+        if (equipped) {
+            if (!playersPlayerController.isLocalPlayer) return;
+            Rotate();
+        }
     }
 
     private void Rotate() {
