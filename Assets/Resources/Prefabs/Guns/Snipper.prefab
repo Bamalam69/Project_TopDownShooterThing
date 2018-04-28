@@ -26,7 +26,7 @@ GameObject:
   - component: {fileID: 50076077147442278}
   - component: {fileID: 114833482505557484}
   m_Layer: 9
-  m_Name: Snipperino
+  m_Name: Snipper
   m_TagString: Gun
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -135,6 +135,11 @@ MonoBehaviour:
   gunType: 3
   justDropped: 0
   colToStopIgnoring: {fileID: 0}
+  clipAmmoCount: 0
+  otherAmmoCount: 0
+  clipSize: 0
+  reloadTime: 0
+  notReloading: 0
 --- !u!114 &114941768070962892
 MonoBehaviour:
   m_ObjectHideFlags: 1

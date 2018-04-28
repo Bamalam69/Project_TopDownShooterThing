@@ -3,17 +3,33 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class AmmoScript : NetworkBehaviour {
-
+public class AmmoScript : NetworkBehaviour
+{
+    [SyncVar] private float ammoAmountToGive;
     [SyncVar] public float ammoAmount;
-    [SerializeField] private GunScript.GunTypes ammoType;
+    [SyncVar] [SerializeField] private GunScript.GunTypes ammoType;
 
-    private void OnCollisionEnter2D(Collision2D col) {
+    [SerializeField] private Sprite[] ammoSprites;
+    [SerializeField] private SpriteRenderer spriteRenderer;
+
+    private void Awake() {
+        if (ammoType == GunScript.GunTypes.AK) {
+            spriteRenderer.sprite = ammoSprites[1];
+            ammoAmountToGive = 30;
+        } else if (ammoType == GunScript.GunTypes.M4) {
+            spriteRenderer.sprite = ammoSprites[0];
+            ammoAmountToGive = 30;
+        } else if (ammoType == GunScript.GunTypes.Micro) {
+            spriteRenderer.sprite = ammoSprites[2];
+            ammoAmountToGive = 15;
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D col) {
         if (col.transform.tag.Contains("Player")) {
-            if (col.gameObject.GetComponent<PlayerController>().holdingGun) {
-                if (col.gameObject.GetComponent<PlayerController>().weaponsGunScript.gunType == this.ammoType) {
-                    CmdGiveAmmoTo(col.gameObject.GetComponent<PlayerController>().netId, ammoAmount, this.netId);
-                }
+            PlayerController colsPlayerController = col.gameObject.GetComponent<PlayerController>();
+            if (colsPlayerController != null) {
+                CmdGiveAmmoTo(col.gameObject.GetComponent<PlayerController>().netId, ammoAmount, this.netId);
             }
         }
     }
@@ -26,10 +42,23 @@ public class AmmoScript : NetworkBehaviour {
     [ClientRpc]
     void RpcGiveAmmoTo(NetworkInstanceId applyAmmoTo, float amountToGive, NetworkInstanceId ammoToDestroy) {
         GameObject ObjToApplyAmmoTo = ClientScene.FindLocalObject(applyAmmoTo).gameObject;
+        PlayerController objsPlayerController = ObjToApplyAmmoTo.GetComponent<PlayerController>();
+
+        GameObject ammoGiver = ClientScene.FindLocalObject(ammoToDestroy);
+        AmmoScript ammosScript = ammoGiver.GetComponent<AmmoScript>();
 
         //Get Player Controller and apply apply to it's weapon script
-        ObjToApplyAmmoTo.GetComponent<PlayerController>().weaponsGunScript.otherAmmoCount += amountToGive;
-        Destroy(ClientScene.FindLocalObject(ammoToDestroy));
+        if (ammosScript.ammoType == GunScript.GunTypes.AK) {
+            objsPlayerController.akAmmoCarrying += amountToGive;
+        } else if (ammosScript.ammoType == GunScript.GunTypes.M4) {
+            objsPlayerController.m4AmmoCarrying += amountToGive;
+        } else if (ammosScript.ammoType == GunScript.GunTypes.Micro) {
+            objsPlayerController.microAmmoCarrying += amountToGive;
+        } else if (ammosScript.ammoType == GunScript.GunTypes.Snipper) {
+            objsPlayerController.snipperAmmoCarrying += amountToGive;
+        }
+
+        Destroy(ammoGiver);
     }
 
 }

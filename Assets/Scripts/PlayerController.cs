@@ -18,16 +18,14 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private Image reloadCircle;
 
     [SerializeField] private GameObject bulletPrefab;
+    [SerializeField] public float akAmmoCarrying;
+    [SerializeField] public float m4AmmoCarrying;
+    [SerializeField] public float microAmmoCarrying;
+    [SerializeField] public float snipperAmmoCarrying;
 
     [SerializeField] private GameObject akPrefab;
     [SerializeField] private GameObject m4Prefab;
     [SerializeField] private GameObject microPrefab;
-
-    private Vector2 akAnchor = new Vector2(-0.02f, 0.01f);
-    private Vector2 akConnectedAnchor = new Vector2(-0.08f, 0.17f);
-
-    private Vector2 microAnchor = new Vector2(0.025f, 0.003f);
-    private Vector2 microConnectedAnchor = new Vector2(-0.15f, 0.17f);
 
     private PolygonCollider2D polCol2D;
 
@@ -166,10 +164,36 @@ public class PlayerController : NetworkBehaviour
                     }
                 }
 
-                if (Input.GetKeyDown(KeyCode.R) && weaponsGunScript.otherAmmoCount > 0) {
-                    weaponsGunScript.notReloading = false;
-                    StartCoroutine(LerpReloadCircle(weaponsGunScript.reloadTime));
-                    Reload();
+                if (Input.GetKeyDown(KeyCode.R)) {
+                    if (weaponsGunScript.gunType == GunScript.GunTypes.AK) {
+                        if (akAmmoCarrying > 0) {
+                            weaponsGunScript.notReloading = false;
+                            StartCoroutine(LerpReloadCircle(weaponsGunScript.reloadTime));
+                            Reload();
+                            Debug.LogWarning("Reloading weapon!");
+                        }
+                    } else if (weaponsGunScript.gunType == GunScript.GunTypes.M4) {
+                        if (m4AmmoCarrying > 0) {
+                            weaponsGunScript.notReloading = false;
+                            StartCoroutine(LerpReloadCircle(weaponsGunScript.reloadTime));
+                            Reload();
+                            Debug.LogWarning("Reloading weapon!");
+                        }
+                    } else if (weaponsGunScript.gunType == GunScript.GunTypes.Micro) {
+                        if (microAmmoCarrying > 0) {
+                            weaponsGunScript.notReloading = false;
+                            StartCoroutine(LerpReloadCircle(weaponsGunScript.reloadTime));
+                            Reload();
+                            Debug.LogWarning("Reloading weapon!");
+                        }
+                    } else if (weaponsGunScript.gunType == GunScript.GunTypes.Snipper) {
+                        if (snipperAmmoCarrying > 0) {
+                            weaponsGunScript.notReloading = false;
+                            StartCoroutine(LerpReloadCircle(weaponsGunScript.reloadTime));
+                            Reload();
+                            Debug.LogWarning("Reloading weapon!");
+                        }
+                    }
                 }
 
                 if (Input.GetMouseButtonDown(0)) {
@@ -184,8 +208,18 @@ public class PlayerController : NetworkBehaviour
                     CmdTempDrop(this.networkIdentity, cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
                 }
 
-                ammoText.text = "Ammo: " + weaponsGunScript.clipAmmoCount + " Rest: " + weaponsGunScript.otherAmmoCount;
 
+                #region Displaying ammo
+                if (weaponsGunScript.gunType == GunScript.GunTypes.AK) {
+                    ammoText.text = "Ammo: " + weaponsGunScript.clipAmmoCount + " Rest: " + akAmmoCarrying;
+                } else if (weaponsGunScript.gunType == GunScript.GunTypes.M4) {
+                    ammoText.text = "Ammo: " + weaponsGunScript.clipAmmoCount + " Rest: " + m4AmmoCarrying;
+                } else if (weaponsGunScript.gunType == GunScript.GunTypes.Micro) {
+                    ammoText.text = "Ammo: " + weaponsGunScript.clipAmmoCount + " Rest: " + microAmmoCarrying;
+                } else if (weaponsGunScript.gunType == GunScript.GunTypes.Snipper) {
+                    ammoText.text = "Ammo: " + weaponsGunScript.clipAmmoCount + " Rest: " + snipperAmmoCarrying;
+                }
+                #endregion
             } else {
                 ammoText.text = "";
             }
@@ -414,11 +448,34 @@ public class PlayerController : NetworkBehaviour
         float ammoToAdd = weaponsGunScript.clipSize - weaponsGunScript.clipAmmoCount;
 
         if (weaponsGunScript.otherAmmoCount < ammoToAdd) {
-            weaponsGunScript.clipAmmoCount += weaponsGunScript.otherAmmoCount;
-            weaponsGunScript.otherAmmoCount -= weaponsGunScript.otherAmmoCount;
+            if (weaponsGunScript.gunType == GunScript.GunTypes.AK) {
+                weaponsGunScript.clipAmmoCount += akAmmoCarrying;
+                akAmmoCarrying -= akAmmoCarrying;
+            } else if (weaponsGunScript.gunType == GunScript.GunTypes.M4) {
+                weaponsGunScript.clipAmmoCount += m4AmmoCarrying;
+                m4AmmoCarrying -= m4AmmoCarrying;
+            } else if (weaponsGunScript.gunType == GunScript.GunTypes.Micro) {
+                weaponsGunScript.clipAmmoCount += microAmmoCarrying;
+                microAmmoCarrying -= microAmmoCarrying;
+            } else if (weaponsGunScript.gunType == GunScript.GunTypes.Snipper) {
+                weaponsGunScript.clipAmmoCount += snipperAmmoCarrying;
+                snipperAmmoCarrying -= snipperAmmoCarrying;
+            }
         } else {
-            weaponsGunScript.clipAmmoCount += ammoToAdd;
-            weaponsGunScript.otherAmmoCount -= ammoToAdd;
+            if (weaponsGunScript.gunType == GunScript.GunTypes.AK) {
+                weaponsGunScript.clipAmmoCount += ammoToAdd;
+                akAmmoCarrying -= ammoToAdd;
+            } else if (weaponsGunScript.gunType == GunScript.GunTypes.M4) {
+                weaponsGunScript.clipAmmoCount += ammoToAdd;
+                m4AmmoCarrying -= ammoToAdd;
+            } else if (weaponsGunScript.gunType == GunScript.GunTypes.Micro) {
+                weaponsGunScript.clipAmmoCount += ammoToAdd;
+                microAmmoCarrying -= ammoToAdd;
+            } else if (weaponsGunScript.gunType == GunScript.GunTypes.Snipper) {
+                weaponsGunScript.clipAmmoCount += ammoToAdd;
+                snipperAmmoCarrying -= ammoToAdd;
+            }
+
         }
     }
 
@@ -440,7 +497,7 @@ public class PlayerController : NetworkBehaviour
             }
         }
 
-        
+
     }
 
     #endregion

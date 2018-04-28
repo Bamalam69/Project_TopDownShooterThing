@@ -85,9 +85,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   akPrefab: {fileID: 1228850217338862, guid: 692a1f7372cf29b49bbae778889fbd2f, type: 2}
+  akAmmoPrefab: {fileID: 1486826368039518, guid: 9dbba69e1c9fc7c43976664b7b9f7664,
+    type: 2}
   m4Prefab: {fileID: 1420831022960606, guid: d06b3205fd1676947985486300e73047, type: 2}
+  m4AmmoPrefab: {fileID: 1870898775993344, guid: b463fa977ce907b45a05f7900ebce451,
+    type: 2}
   microPrefab: {fileID: 1142322189103286, guid: 63ef8a1a3259e8e4a863e5c8cfb0ee67,
+    type: 2}
+  microAmmoPrefab: {fileID: 1016271075083290, guid: 5a683928938e3034bbb99faf3620f4e1,
     type: 2}
   snipperPrefab: {fileID: 1012920446888678, guid: cbed90a72d838294b8e98a7237f9f3ec,
     type: 2}
+  snipperAmmoPrefab: {fileID: 1293054296457472, guid: fc7f97206fea4b649b31facceb5d03b4,
+    type: 2}
   houseRoot: {fileID: 0}
+  weaponSpawnerObjs: []

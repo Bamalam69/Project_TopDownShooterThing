@@ -9,33 +9,33 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1486826368039518}
+  m_RootGameObject: {fileID: 1016271075083290}
   m_IsPrefabParent: 1
---- !u!1 &1486826368039518
+--- !u!1 &1016271075083290
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 4475785497659528}
-  - component: {fileID: 212278926843205422}
-  - component: {fileID: 114001718468092958}
-  - component: {fileID: 114248753841648788}
-  - component: {fileID: 61335180965326730}
+  - component: {fileID: 4952514537421656}
+  - component: {fileID: 212374281253114238}
+  - component: {fileID: 114276511510402536}
+  - component: {fileID: 114960176271674664}
+  - component: {fileID: 61643888233080248}
   m_Layer: 0
-  m_Name: AKAmmo
+  m_Name: MicroAmmo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4475785497659528
+--- !u!4 &4952514537421656
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1486826368039518}
+  m_GameObject: {fileID: 1016271075083290}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.51027256, y: 7.964488, z: -0.22405857}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -43,12 +43,12 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &61335180965326730
+--- !u!61 &61643888233080248
 BoxCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1486826368039518}
+  m_GameObject: {fileID: 1016271075083290}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
@@ -68,12 +68,12 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.6397481, y: 0.31708527}
   m_EdgeRadius: 0
---- !u!114 &114001718468092958
+--- !u!114 &114276511510402536
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1486826368039518}
+  m_GameObject: {fileID: 1016271075083290}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
@@ -82,48 +82,48 @@ MonoBehaviour:
   m_SceneId:
     m_Value: 0
   m_AssetId:
-    i0: 157
-    i1: 187
-    i2: 166
-    i3: 158
-    i4: 28
-    i5: 159
-    i6: 199
-    i7: 196
-    i8: 57
-    i9: 118
-    i10: 102
-    i11: 75
-    i12: 123
-    i13: 159
-    i14: 118
-    i15: 100
+    i0: 90
+    i1: 104
+    i2: 57
+    i3: 40
+    i4: 147
+    i5: 142
+    i6: 48
+    i7: 52
+    i8: 187
+    i9: 185
+    i10: 159
+    i11: 175
+    i12: 54
+    i13: 32
+    i14: 244
+    i15: 225
   m_ServerOnly: 0
   m_LocalPlayerAuthority: 0
---- !u!114 &114248753841648788
+--- !u!114 &114960176271674664
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1486826368039518}
+  m_GameObject: {fileID: 1016271075083290}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e5953b2df7b8e774a8e1d5b2e92aee77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   ammoAmount: 30
-  ammoType: 0
+  ammoType: 2
   ammoSprites:
   - {fileID: 21300002, guid: 54175c59584e86348b92b0c55eff871b, type: 3}
   - {fileID: 21300000, guid: 54175c59584e86348b92b0c55eff871b, type: 3}
   - {fileID: 21300004, guid: 54175c59584e86348b92b0c55eff871b, type: 3}
-  spriteRenderer: {fileID: 212278926843205422}
---- !u!212 &212278926843205422
+  spriteRenderer: {fileID: 212374281253114238}
+--- !u!212 &212374281253114238
 SpriteRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1486826368039518}
+  m_GameObject: {fileID: 1016271075083290}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
