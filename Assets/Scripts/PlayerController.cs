@@ -70,6 +70,12 @@ public class PlayerController : NetworkBehaviour
         nameCanvas.GetComponent<CanvasLockRot>().playerToFollow = this.transform;
         nameCanvas.SetParent(null);
 
+        camInstance = Instantiate(camManagerPrefab);
+        //get camera component
+        cams = camInstance.GetComponentsInChildren<Camera>();
+
+        audListeners = camInstance.GetComponentInChildren<AudioListener>();
+
         polCol2D = GetComponent<PolygonCollider2D>();
 
         networkIdentity = GetComponent<NetworkIdentity>();
@@ -79,19 +85,14 @@ public class PlayerController : NetworkBehaviour
     public override void OnStartLocalPlayer() {
         Debug.Log("Spawned! " + netId);
 
-        camInstance = Instantiate(camManagerPrefab);
-        //get camera component
-        cams = camInstance.GetComponentsInChildren<Camera>();
-
-        audListeners = camInstance.GetComponentInChildren<AudioListener>();
-
         audListeners.enabled = true;
-
 
         foreach (Camera cam in cams) {
             cam.enabled = isLocalPlayer;
             camerashaker = cam.GetComponent<CameraShaker>();
         }
+
+        camerashaker.enabled = true;
 
         foreach (GameObject go in GameObject.FindGameObjectsWithTag("Player")) {
             go.GetComponent<PlayerController>().nameCanvas.GetComponentInChildren<TextMeshProUGUI>().text = go.GetComponent<PlayerController>().netId.ToString();
@@ -153,15 +154,19 @@ public class PlayerController : NetworkBehaviour
             if (holdingGun) {
                 if (Input.GetMouseButton(0) && weaponsGunScript.notReloading) {
                     if (weaponsGunScript.clipAmmoCount > 0) {
-                        if ((weaponHolding.transform.name.Contains("AK")) || (weaponHolding.transform.name.Contains("M4"))) {
+                        if ((weaponsGunScript.gunType == GunScript.GunTypes.AK) || (weaponsGunScript.gunType == GunScript.GunTypes.M4)) {
                             if (Time.time - lastFired > 1 / akFireRate) {
                                 CmdShoot(this.networkIdentity, cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
                                 lastFired = Time.time;
+                                camerashaker.ShakeOnce(Random.Range(6.5f, 4.5f), 0.5f, 0.2f, 0.3f);
+                                Debug.Log("Shaking " + weaponsGunScript.transform.name);
                             }
                         } else if (weaponHolding.transform.name.Contains("Micro")) {
                             if (Time.time - lastFired > 1 / microFireRate) {
                                 CmdShoot(this.networkIdentity, cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
                                 lastFired = Time.time;
+                                camerashaker.ShakeOnce(Random.Range(3.5f, 2.5f), 0.5f, 0.2f, 0.3f);
+                                Debug.Log("Shaking " + weaponsGunScript.transform.name);
                             }
                         }
                     }
@@ -203,6 +208,10 @@ public class PlayerController : NetworkBehaviour
                     if (weaponsGunScript.clipAmmoCount > 0) {
                         if (weaponHolding.transform.name.Contains("Snipper")) {
                             CmdShoot(this.networkIdentity, cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
+                            if (weaponsGunScript.gunType == GunScript.GunTypes.Snipper) {
+                                camerashaker.ShakeOnce(Random.Range(10.5f, 8.5f), 0.5f, 0.2f, 0.3f);
+                                Debug.Log("Shaking " + weaponsGunScript.transform.name);
+                            }
                         }
                     }
                 }
@@ -343,13 +352,6 @@ public class PlayerController : NetworkBehaviour
         GunScript weaponsScript = playersController.weaponHolding.GetComponent<GunScript>();
 
         weaponsScript.clipAmmoCount -= 1;
-        if (weaponsScript.gunType == GunScript.GunTypes.AK || weaponsScript.gunType == GunScript.GunTypes.M4) {
-            playersController.camerashaker.ShakeOnce(Random.Range(6.5f, 4.5f), 0.5f, 0.2f, 0.3f);
-        } else if (weaponsScript.gunType == GunScript.GunTypes.Micro) {
-            playersController.camerashaker.ShakeOnce(Random.Range(3.5f, 2.5f), 0.5f, 0.2f, 0.3f);
-        } else if (weaponsScript.gunType == GunScript.GunTypes.Snipper) {
-            playersController.camerashaker.ShakeOnce(Random.Range(10.5f, 8.5f), 0.5f, 0.2f, 0.3f);
-        }
 
         Destroy(projectile, 2f);
     }
