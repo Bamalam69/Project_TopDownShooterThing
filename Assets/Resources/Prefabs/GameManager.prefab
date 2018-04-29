@@ -100,3 +100,15 @@ MonoBehaviour:
     type: 2}
   houseRoot: {fileID: 0}
   weaponSpawnerObjs: []
+  grassPrefab: {fileID: 1326420965077506, guid: b4fd18afe0522054c9000f7f67b79169,
+    type: 2}
+  grassSprites:
+  - {fileID: 21300000, guid: 6a9fa97dffd1c264888dd26a33b0b9e8, type: 3}
+  - {fileID: 21300002, guid: 6a9fa97dffd1c264888dd26a33b0b9e8, type: 3}
+  - {fileID: 21300004, guid: 6a9fa97dffd1c264888dd26a33b0b9e8, type: 3}
+  - {fileID: 21300006, guid: 6a9fa97dffd1c264888dd26a33b0b9e8, type: 3}
+  - {fileID: 21300008, guid: 6a9fa97dffd1c264888dd26a33b0b9e8, type: 3}
+  - {fileID: 21300010, guid: 6a9fa97dffd1c264888dd26a33b0b9e8, type: 3}
+  - {fileID: 21300012, guid: 6a9fa97dffd1c264888dd26a33b0b9e8, type: 3}
+  - {fileID: 21300014, guid: 6a9fa97dffd1c264888dd26a33b0b9e8, type: 3}
+  - {fileID: 21300016, guid: 6a9fa97dffd1c264888dd26a33b0b9e8, type: 3}

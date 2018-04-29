@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: 124295532762050638}
   - component: {fileID: 92058944290714200}
   - component: {fileID: 81127012540811628}
+  - component: {fileID: 114862264466718482}
   m_Layer: 0
   m_Name: Camera0
   m_TagString: MainCamera
@@ -104,11 +105,11 @@ Camera:
   m_TargetEye: 3
   m_HDR: 1
   m_AllowMSAA: 1
+  m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
-  m_StereoMirrorMode: 0
 --- !u!81 &81127012540811628
 AudioListener:
   m_ObjectHideFlags: 1
@@ -123,6 +124,19 @@ Behaviour:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1551384100129408}
   m_Enabled: 1
+--- !u!114 &114862264466718482
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1551384100129408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ab8353b5ebd32545867da143199a814, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DefaultPosInfluence: {x: 0.15, y: 0.15, z: 0.15}
+  DefaultRotInfluence: {x: 1, y: 1, z: 1}
 --- !u!114 &114955044112500302
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -135,6 +149,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerToFollow: {fileID: 0}
+  timeToLerp: 0.7
+  defaultTime: 0.7
+  size: 6
+  defaultSize: 6
 --- !u!124 &124295532762050638
 Behaviour:
   m_ObjectHideFlags: 1

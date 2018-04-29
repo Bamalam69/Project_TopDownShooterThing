@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using TMPro;
 using UnityEngine.UI;
+using EZCameraShake;
 
 public class PlayerController : NetworkBehaviour
 {
@@ -38,6 +39,7 @@ public class PlayerController : NetworkBehaviour
     //The camera that spawns with the player.
     public GameObject camInstance;
     public Camera[] cams;
+    public CameraShaker camerashaker;
 
     private AudioListener audListeners;
     private NetworkIdentity networkIdentity;
@@ -88,6 +90,7 @@ public class PlayerController : NetworkBehaviour
 
         foreach (Camera cam in cams) {
             cam.enabled = isLocalPlayer;
+            camerashaker = cam.GetComponent<CameraShaker>();
         }
 
         foreach (GameObject go in GameObject.FindGameObjectsWithTag("Player")) {
@@ -142,7 +145,7 @@ public class PlayerController : NetworkBehaviour
 
             //Get mouse rotation and calculate rotation
             Rect rect = new Rect(0, 0, Screen.width, Screen.height);
-            if (rect.Contains(Input.mousePosition)) {
+            if (rect.Contains(Input.mousePosition) && Application.isFocused) {
                 Vector3 dir = Input.mousePosition - cams[0].WorldToScreenPoint(transform.position);
                 angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
             }
@@ -335,7 +338,16 @@ public class PlayerController : NetworkBehaviour
 
         Physics2D.IgnoreCollision(projectile.GetComponent<BoxCollider2D>(), playerThatCalled.GetComponent<PolygonCollider2D>(), true);
 
-        playersController.weaponHolding.GetComponent<GunScript>().clipAmmoCount -= 1;
+        GunScript weaponsScript = playersController.weaponHolding.GetComponent<GunScript>();
+
+        weaponsScript.clipAmmoCount -= 1;
+        if (weaponsScript.gunType == GunScript.GunTypes.AK || weaponsScript.gunType == GunScript.GunTypes.M4) {
+            playersController.camerashaker.ShakeOnce(Random.Range(6.5f, 4.5f), 0.5f, 0.2f, 0.3f);
+        } else if (weaponsScript.gunType == GunScript.GunTypes.Micro) {
+            playersController.camerashaker.ShakeOnce(Random.Range(3.5f, 2.5f), 0.5f, 0.2f, 0.3f);
+        } else if (weaponsScript.gunType == GunScript.GunTypes.Snipper) {
+            playersController.camerashaker.ShakeOnce(Random.Range(10.5f, 8.5f), 0.5f, 0.2f, 0.3f);
+        }
 
         Destroy(projectile, 2f);
     }
@@ -447,35 +459,38 @@ public class PlayerController : NetworkBehaviour
     void Reload() {
         float ammoToAdd = weaponsGunScript.clipSize - weaponsGunScript.clipAmmoCount;
 
-        if (weaponsGunScript.otherAmmoCount < ammoToAdd) {
-            if (weaponsGunScript.gunType == GunScript.GunTypes.AK) {
+        if (weaponsGunScript.gunType == GunScript.GunTypes.AK) {
+            if (akAmmoCarrying < ammoToAdd) {
                 weaponsGunScript.clipAmmoCount += akAmmoCarrying;
                 akAmmoCarrying -= akAmmoCarrying;
-            } else if (weaponsGunScript.gunType == GunScript.GunTypes.M4) {
-                weaponsGunScript.clipAmmoCount += m4AmmoCarrying;
-                m4AmmoCarrying -= m4AmmoCarrying;
-            } else if (weaponsGunScript.gunType == GunScript.GunTypes.Micro) {
-                weaponsGunScript.clipAmmoCount += microAmmoCarrying;
-                microAmmoCarrying -= microAmmoCarrying;
-            } else if (weaponsGunScript.gunType == GunScript.GunTypes.Snipper) {
-                weaponsGunScript.clipAmmoCount += snipperAmmoCarrying;
-                snipperAmmoCarrying -= snipperAmmoCarrying;
-            }
-        } else {
-            if (weaponsGunScript.gunType == GunScript.GunTypes.AK) {
+            } else {
                 weaponsGunScript.clipAmmoCount += ammoToAdd;
                 akAmmoCarrying -= ammoToAdd;
-            } else if (weaponsGunScript.gunType == GunScript.GunTypes.M4) {
+            }
+        } else if (weaponsGunScript.gunType == GunScript.GunTypes.M4) {
+            if (m4AmmoCarrying < ammoToAdd) {
+                weaponsGunScript.clipAmmoCount += m4AmmoCarrying;
+                m4AmmoCarrying -= m4AmmoCarrying;
+            } else {
                 weaponsGunScript.clipAmmoCount += ammoToAdd;
                 m4AmmoCarrying -= ammoToAdd;
-            } else if (weaponsGunScript.gunType == GunScript.GunTypes.Micro) {
+            }
+        } else if (weaponsGunScript.gunType == GunScript.GunTypes.Micro) {
+            if (microAmmoCarrying < ammoToAdd) {
+                weaponsGunScript.clipAmmoCount += microAmmoCarrying;
+                microAmmoCarrying -= microAmmoCarrying;
+            } else {
                 weaponsGunScript.clipAmmoCount += ammoToAdd;
                 microAmmoCarrying -= ammoToAdd;
-            } else if (weaponsGunScript.gunType == GunScript.GunTypes.Snipper) {
+            }
+        } else if (weaponsGunScript.gunType == GunScript.GunTypes.Snipper) {
+            if (snipperAmmoCarrying < ammoToAdd) {
+                weaponsGunScript.clipAmmoCount += snipperAmmoCarrying;
+                snipperAmmoCarrying -= snipperAmmoCarrying;
+            } else {
                 weaponsGunScript.clipAmmoCount += ammoToAdd;
                 snipperAmmoCarrying -= ammoToAdd;
             }
-
         }
     }
 
