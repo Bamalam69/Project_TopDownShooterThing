@@ -72,13 +72,6 @@ public class PlayerController : NetworkBehaviour
 
         polCol2D = GetComponent<PolygonCollider2D>();
 
-        camInstance = Instantiate(camManagerPrefab);
-
-        //get camera component
-        cams = camInstance.GetComponentsInChildren<Camera>();
-
-        audListeners = camInstance.GetComponentInChildren<AudioListener>();
-
         networkIdentity = GetComponent<NetworkIdentity>();
     }
 
@@ -86,7 +79,14 @@ public class PlayerController : NetworkBehaviour
     public override void OnStartLocalPlayer() {
         Debug.Log("Spawned! " + netId);
 
+        camInstance = Instantiate(camManagerPrefab);
+        //get camera component
+        cams = camInstance.GetComponentsInChildren<Camera>();
+
+        audListeners = camInstance.GetComponentInChildren<AudioListener>();
+
         audListeners.enabled = true;
+
 
         foreach (Camera cam in cams) {
             cam.enabled = isLocalPlayer;
@@ -327,6 +327,8 @@ public class PlayerController : NetworkBehaviour
     void RpcShoot(NetworkIdentity playerCallingId, Vector2 target) {
         GameObject playerThatCalled = ClientScene.FindLocalObject(playerCallingId.netId);
         PlayerController playersController = playerThatCalled.GetComponent<PlayerController>();
+
+        Debug.Log(playersController);
 
         Vector2 myPos = new Vector2(playersController.weaponHolding.transform.position.x, playersController.weaponHolding.transform.position.y);
         Vector2 direction = (target - myPos).normalized;

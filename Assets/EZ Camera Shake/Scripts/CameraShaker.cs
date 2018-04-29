@@ -25,7 +25,7 @@ namespace EZCameraShake
 
         List<CameraShakeInstance> cameraShakeInstances = new List<CameraShakeInstance>();
 
-        void Awake()
+        void Start()
         {
             Instance = this;
             instanceList.Add(gameObject.name, this);

@@ -22,7 +22,7 @@ public class GunScript : NetworkBehaviour
 
     public BoxCollider2D boxCol;
 
-    public bool equipped;
+    [SyncVar] public bool equipped;
 
     public enum GunTypes
     {
