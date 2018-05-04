@@ -53,9 +53,18 @@ public class PlayerController : NetworkBehaviour
 
     [SerializeField] private GameObject camManagerPrefab;
 
+    [SerializeField] private GameObject windowPrefab;
+    private List<GameObject> windowInstances = new List<GameObject>();
+
     [SerializeField] private bool editorDebug;
 
     [SerializeField] Collider2D debugCol;
+
+    [SyncVar] public float health;
+    [SerializeField] private Slider healthSlider;
+
+    [SerializeField] private ParticleSystem bloodParticleSystem;
+
 
     #endregion
 
@@ -98,6 +107,8 @@ public class PlayerController : NetworkBehaviour
             go.GetComponent<PlayerController>().nameCanvas.GetComponentInChildren<TextMeshProUGUI>().text = go.GetComponent<PlayerController>().netId.ToString();
         }
 
+        health = 100.0f;
+
         camInstance.GetComponent<CameraController>().playerToFollow = this.transform;
         camInstance.transform.SetParent(null);
 
@@ -105,15 +116,33 @@ public class PlayerController : NetworkBehaviour
         ammoText.text = "";
     }
 
+    private void OnConnectedToServer() {
+        //SpawnWindows();
+    }
+
     #region Collision events
     void OnCollisionEnter2D(Collision2D col) {
-        if (!isLocalPlayer) return;
+        if (!isLocalPlayer) {
+            if (col.gameObject.transform.CompareTag("bullet")) {
+                bloodParticleSystem.Play();
+                Destroy(col.gameObject);
+            }
+            return;
+        }
+
         if (col.gameObject.transform.CompareTag("Gun")) {
             if (col.transform.CompareTag("Gun") && !holdingGun && !col.gameObject.GetComponent<GunScript>().equipped && weaponHolding == null) {
                 CmdEquip(col.gameObject.GetComponent<NetworkIdentity>(), this.networkIdentity);
             }
+        } else if (col.gameObject.transform.CompareTag("bullet")) {
+            if (col.gameObject.GetComponent<Rigidbody2D>().velocity.magnitude > 5.0f) {
+                CmdApplyDamage(this.networkIdentity.netId, col.gameObject.GetComponent<BulletScript>().damageAmount);
+                bloodParticleSystem.Play();
+                Destroy(col.gameObject);
+            }
         }
     }
+
 
     void OnTriggerEnter2D(Collider2D col) {
         if (!isLocalPlayer) return;
@@ -235,6 +264,8 @@ public class PlayerController : NetworkBehaviour
             } else {
                 ammoText.text = "";
             }
+
+            healthSlider.value = health / 100.0f;
         }
 
         //Debugging stuff
@@ -354,6 +385,18 @@ public class PlayerController : NetworkBehaviour
         weaponsScript.clipAmmoCount -= 1;
 
         Destroy(projectile, 2f);
+    }
+
+    [Command]
+    private void CmdApplyDamage(NetworkInstanceId netId, float damageAmount) {
+        RpcApplyDamage(netId, damageAmount);
+    }
+
+    [ClientRpc]
+    private void RpcApplyDamage(NetworkInstanceId netId, float damageAmount) {
+        PlayerController playerCalling = ClientScene.FindLocalObject(netId).GetComponent<PlayerController>();
+
+        playerCalling.health -= damageAmount;
     }
 
     #endregion
@@ -519,5 +562,20 @@ public class PlayerController : NetworkBehaviour
 
     }
 
+    void SpawnWindows() {
+        List<GameObject> windowSpawnObjs = new List<GameObject>();
+        windowSpawnObjs.AddRange(GameObject.FindGameObjectsWithTag("WindowSpawner"));
+        windowSpawnObjs.AddRange(GameObject.FindGameObjectsWithTag("WindowSpawner2"));
+
+        foreach (GameObject obj in windowSpawnObjs) {
+            windowInstances.Add(Instantiate(windowPrefab, obj.transform.position, Quaternion.Euler(new Vector3(0.0f, 0.0f, 90.0f))) as GameObject);
+            if (obj.CompareTag("WindowSpawner2")) {
+                windowInstances[windowInstances.Count - 1].transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, 0.0f));
+            }
+
+            Explodable windowScript = windowInstances[windowInstances.Count - 1].GetComponent<Explodable>();
+            windowScript.allowRuntimeFragmentation = true;
+        }
+    }
     #endregion
 }

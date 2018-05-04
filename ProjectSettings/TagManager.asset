@@ -13,6 +13,9 @@ TagManager:
   - House
   - PlayerAmmoText
   - Ammo
+  - WindowSpawner
+  - WindowSpawner2
+  - Door
   layers:
   - Default
   - TransparentFX
@@ -28,8 +31,8 @@ TagManager:
   - hiddenObjs
   - roofs
   - wallCol
-  - 
-  - 
+  - Window
+  - Door
   - 
   - 
   - 

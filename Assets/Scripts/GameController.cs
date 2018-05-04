@@ -30,6 +30,9 @@ public class GameController : NetworkBehaviour
     [SerializeField] private GameObject houseRoot;
     [SerializeField] private List<GameObject> weaponSpawnerObjs = new List<GameObject>();
 
+    [SerializeField] private GameObject windowPrefab;
+    private List<GameObject> windowInstances = new List<GameObject>();
+
     #endregion
 
     #region funcs
@@ -38,7 +41,7 @@ public class GameController : NetworkBehaviour
         DontDestroyOnLoad(this.gameObject);
         Debug.Log("Spawning weapons!");
         SpawnWeapons();
-        //SpawnWindows();
+        SpawnWindows();
     }
 
     void SpawnWeapons() {
@@ -107,9 +110,21 @@ public class GameController : NetworkBehaviour
         }
     }
 
-    //void SpawnWindows() {
-    //    houseRoot.GetComponent<WindowSpawner>().SpawnWindows();
-    //}
+    void SpawnWindows() {
+        List<GameObject> windowSpawnObjs = new List<GameObject>();
+        windowSpawnObjs.AddRange(GameObject.FindGameObjectsWithTag("WindowSpawner"));
+        windowSpawnObjs.AddRange(GameObject.FindGameObjectsWithTag("WindowSpawner2"));
+
+        foreach(GameObject obj in windowSpawnObjs) {
+            windowInstances.Add(Instantiate(windowPrefab, obj.transform.position, Quaternion.Euler(new Vector3(0.0f, 0.0f, 90.0f))) as GameObject);
+            if (obj.CompareTag("WindowSpawner2")) {
+                windowInstances[windowInstances.Count - 1].transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, 0.0f));
+            }
+
+            Explodable windowScript = windowInstances[windowInstances.Count - 1].GetComponent<Explodable>();
+            windowScript.allowRuntimeFragmentation = true;
+        }
+    }
 
     #endregion
 

@@ -1,28 +1,30 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
 
-public class WindowExplode : NetworkBehaviour
+public class WindowExplode : MonoBehaviour
 {
-	void OnCollisionEnter2D(Collision2D col) {
+    void OnCollisionEnter2D(Collision2D col) {
         if (col.transform.CompareTag("bullet")) {
-            CmdExplode();
+            Explode();
         }
     }
 
-    [Command]
-    void CmdExplode() {
-        RpcExplode();
-    }
-
-    [ClientRpc]
-    void RpcExplode() {
-        Debug.Log("Breaking object!");
-
-        GetComponent<Rigidbody2D>().isKinematic = false;
+    void Explode() {
+        //Debug.Log("Breaking object! objNetId == " + objNetId);
 
         Explodable explodeScript = GetComponent<Explodable>();
+
         explodeScript.explode();
+        //Physics2D.IgnoreLayerCollision(10, 14);
+        foreach (GameObject fragment in explodeScript.fragments) {
+            //Rigidbody2D fragRb = fragment.GetComponent<Rigidbody2D>();
+            //fragRb.velocity += bulletObj.GetComponent<Rigidbody2D>().GetPointVelocity(bulletObj.TransformPoint(point)) * Random.Range(0.1f, 1.0f);
+            //fragRb.isKinematic = false;
+            //fragRb.drag = 2.0f;
+            //fragRb.angularDrag = 2.0f;
+
+            Destroy(fragment, 5.0f);
+        }
     }
 }

@@ -22,7 +22,7 @@ public class GunScript : NetworkBehaviour
 
     public BoxCollider2D boxCol;
 
-    [SyncVar] public bool equipped;
+    public bool equipped;
 
     public enum GunTypes
     {
@@ -36,11 +36,11 @@ public class GunScript : NetworkBehaviour
 
     private Quaternion angle;
 
-    [SyncVar] public float clipAmmoCount;
-    [SyncVar] public float otherAmmoCount;
-    [SyncVar] public float clipSize;
-    [SyncVar] public float reloadTime;
-    [SyncVar] public bool notReloading;
+    public float clipAmmoCount;
+    public float otherAmmoCount;
+    public float clipSize;
+    public float reloadTime;
+    public bool notReloading;
 
     #endregion
 
