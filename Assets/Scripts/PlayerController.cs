@@ -124,21 +124,23 @@ public class PlayerController : NetworkBehaviour
     void OnCollisionEnter2D(Collision2D col) {
         if (!isLocalPlayer) {
             if (col.gameObject.transform.CompareTag("bullet")) {
-                bloodParticleSystem.Play();
-                Destroy(col.gameObject);
+                if (!col.gameObject.GetComponent<BulletScript>().hasCollided) {
+                    bloodParticleSystem.Play();
+                    Destroy(col.gameObject);
+                }
             }
             return;
-        }
-
-        if (col.gameObject.transform.CompareTag("Gun")) {
-            if (col.transform.CompareTag("Gun") && !holdingGun && !col.gameObject.GetComponent<GunScript>().equipped && weaponHolding == null) {
-                CmdEquip(col.gameObject.GetComponent<NetworkIdentity>(), this.networkIdentity);
-            }
-        } else if (col.gameObject.transform.CompareTag("bullet")) {
-            if (col.gameObject.GetComponent<Rigidbody2D>().velocity.magnitude > 5.0f) {
-                CmdApplyDamage(this.networkIdentity.netId, col.gameObject.GetComponent<BulletScript>().damageAmount);
-                bloodParticleSystem.Play();
-                Destroy(col.gameObject);
+        } else {
+            if (col.gameObject.transform.CompareTag("Gun")) {
+                if (col.transform.CompareTag("Gun") && !holdingGun && !col.gameObject.GetComponent<GunScript>().equipped && weaponHolding == null) {
+                    CmdEquip(col.gameObject.GetComponent<NetworkIdentity>(), this.networkIdentity);
+                }
+            } else if (col.gameObject.transform.CompareTag("bullet")) {
+                if (!col.gameObject.GetComponent<BulletScript>().hasCollided) {
+                    CmdApplyDamage(this.networkIdentity.netId, col.gameObject.GetComponent<BulletScript>().damageAmount);
+                    bloodParticleSystem.Play();
+                    Destroy(col.gameObject);
+                }
             }
         }
     }
