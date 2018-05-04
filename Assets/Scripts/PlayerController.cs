@@ -562,20 +562,5 @@ public class PlayerController : NetworkBehaviour
 
     }
 
-    void SpawnWindows() {
-        List<GameObject> windowSpawnObjs = new List<GameObject>();
-        windowSpawnObjs.AddRange(GameObject.FindGameObjectsWithTag("WindowSpawner"));
-        windowSpawnObjs.AddRange(GameObject.FindGameObjectsWithTag("WindowSpawner2"));
-
-        foreach (GameObject obj in windowSpawnObjs) {
-            windowInstances.Add(Instantiate(windowPrefab, obj.transform.position, Quaternion.Euler(new Vector3(0.0f, 0.0f, 90.0f))) as GameObject);
-            if (obj.CompareTag("WindowSpawner2")) {
-                windowInstances[windowInstances.Count - 1].transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, 0.0f));
-            }
-
-            Explodable windowScript = windowInstances[windowInstances.Count - 1].GetComponent<Explodable>();
-            windowScript.allowRuntimeFragmentation = true;
-        }
-    }
     #endregion
 }

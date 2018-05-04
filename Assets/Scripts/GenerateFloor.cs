@@ -23,11 +23,10 @@ public class GenerateFloor : MonoBehaviour {
 
     void GenerateGrassLand() {
 
-
-        for (float _x = 0; Mathf.Abs(_x) < mapWidth; _x++) {
-            for (float _y = 0; Mathf.Abs(_y) < mapHeight; _y++) {
-                grassInstances.Add(Instantiate(grassPrefab, new Vector3(_x * grassSize, _y * grassSize), Quaternion.identity, environmentHolder) as GameObject);
-                Debug.Log("Spawning Floor!");
+        for (float _x = 100; _x != -100; _x--) {
+            Debug.Log("Spawning on X!");
+            for (float _y = -100; _y != 100; _y++) {
+                grassInstances.Add(Instantiate(grassPrefab, new Vector3(_x * grassSize, _y * grassSize), Quaternion.identity, environmentHolder) as GameObject);              
             }
         }
         RandomizeGrassSprites();
