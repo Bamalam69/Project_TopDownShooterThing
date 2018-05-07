@@ -8,15 +8,15 @@ public class BulletScript : NetworkBehaviour {
     //Initialized in inspector
     [SyncVar] public float damageAmount;
 
-    [SyncVar] public bool hasCollided;
+    public bool hasCollidedWithWall;
 
     private void Start() {
-        hasCollided = false;
+        hasCollidedWithWall = false;
     }
 
     private void OnCollisionEnter2D(Collision2D collision) {
         if (!collision.transform.CompareTag("Window")) {
-            hasCollided = true;
+            hasCollidedWithWall = true;
         }
     }
 

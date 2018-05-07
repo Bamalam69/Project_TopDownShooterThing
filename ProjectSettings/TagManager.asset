@@ -16,6 +16,8 @@ TagManager:
   - WindowSpawner
   - WindowSpawner2
   - Door
+  - CameraController
+  - NameCanvas
   layers:
   - Default
   - TransparentFX

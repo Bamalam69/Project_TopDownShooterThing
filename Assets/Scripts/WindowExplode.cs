@@ -6,7 +6,7 @@ public class WindowExplode : MonoBehaviour
 {
     void OnCollisionEnter2D(Collision2D col) {
         if (col.transform.CompareTag("bullet")) {
-            if (!col.gameObject.GetComponent<BulletScript>().hasCollided) { 
+            if (!col.gameObject.GetComponent<BulletScript>().hasCollidedWithWall) { 
                 Explode();
             }
         }

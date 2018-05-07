@@ -34,7 +34,7 @@ public class PlayerController : NetworkBehaviour
     private GameObject weaponHolding = null;
     public GunScript weaponsGunScript = null;
 
-    public bool holdingGun;
+    [SyncVar] public bool holdingGun;
 
     //The camera that spawns with the player.
     public GameObject camInstance;
@@ -92,7 +92,7 @@ public class PlayerController : NetworkBehaviour
 
     //Must make sure this is here and that it is called because otherwise isLocalPlayer may not become true.
     public override void OnStartLocalPlayer() {
-        Debug.Log("Spawned! " + netId);
+        Debug.Log("Spawned Player #" + netId.ToString() + "!");
 
         audListeners.enabled = true;
 
@@ -123,11 +123,9 @@ public class PlayerController : NetworkBehaviour
     #region Collision events
     void OnCollisionEnter2D(Collision2D col) {
         if (!isLocalPlayer) {
-            if (col.gameObject.transform.CompareTag("bullet")) {
-                if (!col.gameObject.GetComponent<BulletScript>().hasCollided) {
-                    bloodParticleSystem.Play();
-                    Destroy(col.gameObject);
-                }
+            if (col.gameObject.GetComponent<BulletScript>() != null) {
+                bloodParticleSystem.Play();
+                Destroy(col.gameObject);
             }
             return;
         } else {
@@ -136,21 +134,17 @@ public class PlayerController : NetworkBehaviour
                     CmdEquip(col.gameObject.GetComponent<NetworkIdentity>(), this.networkIdentity);
                 }
             } else if (col.gameObject.transform.CompareTag("bullet")) {
-                if (!col.gameObject.GetComponent<BulletScript>().hasCollided) {
-                    CmdApplyDamage(this.networkIdentity.netId, col.gameObject.GetComponent<BulletScript>().damageAmount);
-                    bloodParticleSystem.Play();
-                    Destroy(col.gameObject);
-                }
+                CmdApplyDamage(this.networkIdentity.netId, col.gameObject.GetComponent<BulletScript>().damageAmount);
+                bloodParticleSystem.Play();
+                Destroy(col.gameObject);
             }
         }
     }
-
 
     void OnTriggerEnter2D(Collider2D col) {
         if (!isLocalPlayer) return;
         if (col.transform.CompareTag("TransCol")) {
             LockOnRoof(col, 0.2f, 0.2f);
-            //CameraLerpToHouse(col.transform, 0.2f, 4.0f);
         }
     }
 
@@ -158,7 +152,6 @@ public class PlayerController : NetworkBehaviour
         if (!isLocalPlayer) return;
         if (col.transform.CompareTag("TransCol")) {
             LockOnRoof(col, 0.2f, 1.0f);
-            CameraLerpToHouse(this.transform, 0.7f, 6.0f);
         }
     }
 
@@ -240,8 +233,7 @@ public class PlayerController : NetworkBehaviour
                         if (weaponHolding.transform.name.Contains("Snipper")) {
                             CmdShoot(this.networkIdentity, cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
                             if (weaponsGunScript.gunType == GunScript.GunTypes.Snipper) {
-                                camerashaker.ShakeOnce(Random.Range(10.5f, 8.5f), 0.5f, 0.2f, 0.3f);
-                                Debug.Log("Shaking " + weaponsGunScript.transform.name);
+                                camerashaker.ShakeOnce(Random.Range(15.5f, 10.5f), 0.7f, 0.2f, 0.3f);
                             }
                         }
                     }
@@ -369,8 +361,6 @@ public class PlayerController : NetworkBehaviour
     void RpcShoot(NetworkIdentity playerCallingId, Vector2 target) {
         GameObject playerThatCalled = ClientScene.FindLocalObject(playerCallingId.netId);
         PlayerController playersController = playerThatCalled.GetComponent<PlayerController>();
-
-        Debug.Log(playersController);
 
         Vector2 myPos = new Vector2(playersController.weaponHolding.transform.position.x, playersController.weaponHolding.transform.position.y);
         Vector2 direction = (target - myPos).normalized;

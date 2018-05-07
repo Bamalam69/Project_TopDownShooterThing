@@ -51,7 +51,7 @@ public class GameController : NetworkBehaviour
         int i = 1;
 
         foreach (GameObject weaponSpawnerObj in weaponSpawnerObjs) {
-            int weaponChance = Random.Range(1, 10);
+            int weaponChance = Random.Range(1, 14);
 
             if (weaponChance >= 1 && weaponChance <= 4) {
                 microInstances.Add((GameObject)Instantiate(microPrefab, weaponSpawnerObj.transform.position, Quaternion.Euler(new Vector3(0.0f, 0.0f, Random.rotation.eulerAngles.z))));
