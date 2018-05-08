@@ -36,11 +36,10 @@ public class GunScript : NetworkBehaviour
 
     private Quaternion angle;
 
-    public float clipAmmoCount;
-    public float otherAmmoCount;
-    public float clipSize;
-    public float reloadTime;
-    public bool notReloading;
+    [SyncVar] public float clipAmmoCount;
+    [SyncVar] public float clipSize;
+    [SyncVar] public float reloadTime;
+    [SyncVar] public bool notReloading;
 
     #endregion
 

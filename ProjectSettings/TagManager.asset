@@ -18,6 +18,10 @@ TagManager:
   - Door
   - CameraController
   - NameCanvas
+  - InputFieldIPAdress
+  - StartHost
+  - JoinGame
+  - DisconnectButton
   layers:
   - Default
   - TransparentFX

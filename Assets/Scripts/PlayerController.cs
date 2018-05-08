@@ -12,7 +12,7 @@ public class PlayerController : NetworkBehaviour
     //Movement and player related things.
     private Rigidbody2D rb;
     private Vector3 movementVector;
-    private float moveSpeed = 7.0f;
+    private const float moveSpeed = 7.0f;
     private float angle;
     private RectTransform nameCanvas;
     [SerializeField] private TextMeshProUGUI ammoText;
@@ -116,10 +116,13 @@ public class PlayerController : NetworkBehaviour
         ammoText.text = "";
     }
 
-    private void OnConnectedToServer() {
-        //SpawnWindows();
+    public override void OnStartClient() {
+        if (Network.isServer) return;
+        //Send netid to host
+        CmdSetNameplate(this.netId);
     }
 
+    
     #region Collision events
     void OnCollisionEnter2D(Collision2D col) {
         if (!isLocalPlayer) {
@@ -183,14 +186,12 @@ public class PlayerController : NetworkBehaviour
                                 CmdShoot(this.networkIdentity, cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
                                 lastFired = Time.time;
                                 camerashaker.ShakeOnce(Random.Range(6.5f, 4.5f), 0.5f, 0.2f, 0.3f);
-                                Debug.Log("Shaking " + weaponsGunScript.transform.name);
                             }
                         } else if (weaponHolding.transform.name.Contains("Micro")) {
                             if (Time.time - lastFired > 1 / microFireRate) {
                                 CmdShoot(this.networkIdentity, cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
                                 lastFired = Time.time;
                                 camerashaker.ShakeOnce(Random.Range(3.5f, 2.5f), 0.5f, 0.2f, 0.3f);
-                                Debug.Log("Shaking " + weaponsGunScript.transform.name);
                             }
                         }
                     }
@@ -393,6 +394,16 @@ public class PlayerController : NetworkBehaviour
 
     #endregion
 
+    private void CmdSetNameplate(NetworkInstanceId _netId) {
+        RpcSetNameplate(_netId);
+    }
+
+    private void RpcSetNameplate(NetworkInstanceId _netId) {
+        PlayerController playerCalling = ClientScene.FindLocalObject(_netId).GetComponent<PlayerController>();
+
+        playerCalling.nameCanvas.GetComponentInChildren<TextMeshProUGUI>().text = _netId.ToString();
+    }
+    
     #region Dropping functions
 
     [Command]

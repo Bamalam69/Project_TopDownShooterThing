@@ -6,8 +6,8 @@ public class GenerateFloor : MonoBehaviour {
 
     private float grassSize = 2.54f;
 
-    private float mapWidth = 15.0f;
-    private float mapHeight = 15.0f;
+    private const float mapWidth = 15.0f;
+    private const float mapHeight = 15.0f;
 
     [SerializeField] private Transform environmentHolder;
     [SerializeField] private GameObject grassPrefab;
