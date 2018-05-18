@@ -14,7 +14,7 @@ public class PlayerController : NetworkBehaviour
     private Vector3 movementVector;
     private const float moveSpeed = 7.0f;
     private float angle;
-    private RectTransform nameCanvas;
+    public GameObject nameCanvasInstance;
     [SerializeField] private TextMeshProUGUI ammoText;
     [SerializeField] private Image reloadCircle;
 
@@ -53,18 +53,15 @@ public class PlayerController : NetworkBehaviour
 
     [SerializeField] private GameObject camManagerPrefab;
 
-    [SerializeField] private GameObject windowPrefab;
-    private List<GameObject> windowInstances = new List<GameObject>();
+    [SyncVar] public float health;
+    [SerializeField] private Slider healthSlider;
+
+    [SerializeField] public GameObject bloodParticleSystemGO;
+    [SerializeField] private GameObject nameCanvasPrefab;
 
     [SerializeField] private bool editorDebug;
 
     [SerializeField] Collider2D debugCol;
-
-    [SyncVar] public float health;
-    [SerializeField] private Slider healthSlider;
-
-    [SerializeField] private ParticleSystem bloodParticleSystem;
-
 
     #endregion
 
@@ -74,10 +71,9 @@ public class PlayerController : NetworkBehaviour
         rb = GetComponent<Rigidbody2D>();
         holdingGun = false;
 
-        nameCanvas = transform.Find("Name Canvas") as RectTransform;
+        nameCanvasInstance = Instantiate(nameCanvasPrefab) as GameObject;
 
-        nameCanvas.GetComponent<CanvasLockRot>().playerToFollow = this.transform;
-        nameCanvas.SetParent(null);
+        nameCanvasInstance.GetComponent<CanvasLockRot>().playerToFollow = this.transform;
 
         camInstance = Instantiate(camManagerPrefab);
         //get camera component
@@ -86,6 +82,8 @@ public class PlayerController : NetworkBehaviour
         audListeners = camInstance.GetComponentInChildren<AudioListener>();
 
         polCol2D = GetComponent<PolygonCollider2D>();
+
+        bloodParticleSystemGO = this.transform.Find("Blood").gameObject;
 
         networkIdentity = GetComponent<NetworkIdentity>();
     }
@@ -104,7 +102,7 @@ public class PlayerController : NetworkBehaviour
         camerashaker.enabled = true;
 
         foreach (GameObject go in GameObject.FindGameObjectsWithTag("Player")) {
-            go.GetComponent<PlayerController>().nameCanvas.GetComponentInChildren<TextMeshProUGUI>().text = go.GetComponent<PlayerController>().netId.ToString();
+            go.GetComponent<PlayerController>().nameCanvasInstance.GetComponentInChildren<TextMeshProUGUI>().text = go.GetComponent<PlayerController>().netId.ToString();
         }
 
         health = 100.0f;
@@ -114,20 +112,16 @@ public class PlayerController : NetworkBehaviour
 
         ammoText.transform.parent.transform.gameObject.SetActive(true);
         ammoText.text = "";
-    }
 
-    public override void OnStartClient() {
-        if (Network.isServer) return;
-        //Send netid to host
+        GameObject.FindGameObjectWithTag("NetworkManager").GetComponent<NetworkManager_Custom>().localPlayer = this.netId;
         CmdSetNameplate(this.netId);
     }
 
-    
     #region Collision events
+
     void OnCollisionEnter2D(Collision2D col) {
         if (!isLocalPlayer) {
             if (col.gameObject.GetComponent<BulletScript>() != null) {
-                bloodParticleSystem.Play();
                 Destroy(col.gameObject);
             }
             return;
@@ -138,7 +132,6 @@ public class PlayerController : NetworkBehaviour
                 }
             } else if (col.gameObject.transform.CompareTag("bullet")) {
                 CmdApplyDamage(this.networkIdentity.netId, col.gameObject.GetComponent<BulletScript>().damageAmount);
-                bloodParticleSystem.Play();
                 Destroy(col.gameObject);
             }
         }
@@ -186,12 +179,21 @@ public class PlayerController : NetworkBehaviour
                                 CmdShoot(this.networkIdentity, cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
                                 lastFired = Time.time;
                                 camerashaker.ShakeOnce(Random.Range(6.5f, 4.5f), 0.5f, 0.2f, 0.3f);
+                                weaponsGunScript.clipAmmoCount -= 1;
                             }
-                        } else if (weaponHolding.transform.name.Contains("Micro")) {
+                        } else if (weaponsGunScript.gunType == GunScript.GunTypes.M4) {
+                            if (Time.time - lastFired > 1 / m4FireRate) {
+                                CmdShoot(this.networkIdentity, cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
+                                lastFired = Time.time;
+                                camerashaker.ShakeOnce(Random.Range(6.5f, 4.5f), 0.5f, 0.2f, 0.3f);
+                                weaponsGunScript.clipAmmoCount -= 1;
+                            }
+                        } else if (weaponsGunScript.gunType == GunScript.GunTypes.Micro) {
                             if (Time.time - lastFired > 1 / microFireRate) {
                                 CmdShoot(this.networkIdentity, cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
                                 lastFired = Time.time;
                                 camerashaker.ShakeOnce(Random.Range(3.5f, 2.5f), 0.5f, 0.2f, 0.3f);
+                                weaponsGunScript.clipAmmoCount -= 1;
                             }
                         }
                     }
@@ -203,45 +205,40 @@ public class PlayerController : NetworkBehaviour
                             weaponsGunScript.notReloading = false;
                             StartCoroutine(LerpReloadCircle(weaponsGunScript.reloadTime));
                             Reload();
-                            Debug.LogWarning("Reloading weapon!");
                         }
                     } else if (weaponsGunScript.gunType == GunScript.GunTypes.M4) {
                         if (m4AmmoCarrying > 0) {
                             weaponsGunScript.notReloading = false;
                             StartCoroutine(LerpReloadCircle(weaponsGunScript.reloadTime));
                             Reload();
-                            Debug.LogWarning("Reloading weapon!");
                         }
                     } else if (weaponsGunScript.gunType == GunScript.GunTypes.Micro) {
                         if (microAmmoCarrying > 0) {
                             weaponsGunScript.notReloading = false;
                             StartCoroutine(LerpReloadCircle(weaponsGunScript.reloadTime));
                             Reload();
-                            Debug.LogWarning("Reloading weapon!");
                         }
                     } else if (weaponsGunScript.gunType == GunScript.GunTypes.Snipper) {
                         if (snipperAmmoCarrying > 0) {
                             weaponsGunScript.notReloading = false;
                             StartCoroutine(LerpReloadCircle(weaponsGunScript.reloadTime));
                             Reload();
-                            Debug.LogWarning("Reloading weapon!");
                         }
                     }
                 }
 
                 if (Input.GetMouseButtonDown(0)) {
                     if (weaponsGunScript.clipAmmoCount > 0) {
-                        if (weaponHolding.transform.name.Contains("Snipper")) {
+                        if (weaponsGunScript.gunType == GunScript.GunTypes.Snipper) {
                             CmdShoot(this.networkIdentity, cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
-                            if (weaponsGunScript.gunType == GunScript.GunTypes.Snipper) {
-                                camerashaker.ShakeOnce(Random.Range(15.5f, 10.5f), 0.7f, 0.2f, 0.3f);
-                            }
+                            camerashaker.ShakeOnce(Random.Range(15.5f, 10.5f), 0.8f, 0.2f, 0.3f);
+                            weaponsGunScript.clipAmmoCount -= 1;
                         }
                     }
                 }
 
                 if (Input.GetKeyDown(KeyCode.G)) {
-                    CmdTempDrop(this.networkIdentity, cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
+                    CmdThrowWeapon(this.networkIdentity, cams[0].ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y)));
                 }
 
 
@@ -303,21 +300,14 @@ public class PlayerController : NetworkBehaviour
     void RpcEquip(NetworkIdentity gunToEquip, NetworkIdentity playerId) {
         GameObject playerThatCalled = ClientScene.FindLocalObject(playerId.netId);
         GameObject weaponTouched = ClientScene.FindLocalObject(gunToEquip.netId);
+        PlayerController playersController = playerThatCalled.GetComponent<PlayerController>();
 
         string objectName = weaponTouched.transform.name;
 
         SpriteRenderer weaponRenderer = weaponTouched.GetComponent<SpriteRenderer>();
         GunScript weaponScript = weaponTouched.GetComponent<GunScript>();
 
-        if (weaponScript.gunType == GunScript.GunTypes.AK) {
-            weaponRenderer.sprite = weaponScript.akSprites[1];
-        } else if (weaponScript.gunType == GunScript.GunTypes.M4) {
-            weaponRenderer.sprite = weaponScript.m4Sprites[1];
-        } else if (weaponScript.gunType == GunScript.GunTypes.Micro) {
-            weaponRenderer.sprite = weaponScript.microSprites[1];
-        } else if (weaponScript.gunType == GunScript.GunTypes.Snipper) {
-            weaponRenderer.sprite = weaponScript.snipperSprites[1];
-        }
+        weaponScript.GetComponent<Animator>().SetTrigger("equip");
 
         weaponRenderer.sortingOrder = 0;
 
@@ -334,7 +324,7 @@ public class PlayerController : NetworkBehaviour
         joint.anchor = new Vector2(0.0f, -0.2f);
         joint.connectedAnchor = Vector2.zero;
 
-        weaponScript.playersPlayerController = playerThatCalled.GetComponent<PlayerController>();
+        weaponScript.playersPlayerController = playersController;
 
         weaponScript.cam = weaponScript.playersPlayerController.cams[0];
 
@@ -343,8 +333,8 @@ public class PlayerController : NetworkBehaviour
         weaponScript.playersPlayerController.holdingGun = true;
         weaponScript.equipped = true;
 
-        playerThatCalled.GetComponent<PlayerController>().weaponHolding = weaponTouched;
-        playerThatCalled.GetComponent<PlayerController>().weaponsGunScript = weaponScript;
+        playersController.weaponHolding = weaponTouched;
+        playersController.weaponsGunScript = weaponScript;
 
         weaponScript.notReloading = true;
     }
@@ -360,8 +350,8 @@ public class PlayerController : NetworkBehaviour
 
     [ClientRpc]
     void RpcShoot(NetworkIdentity playerCallingId, Vector2 target) {
-        GameObject playerThatCalled = ClientScene.FindLocalObject(playerCallingId.netId);
-        PlayerController playersController = playerThatCalled.GetComponent<PlayerController>();
+        //GameObject playerThatCalled = ClientScene.FindLocalObject(playerCallingId.netId);
+        PlayerController playersController = ClientScene.FindLocalObject(playerCallingId.netId).GetComponent<PlayerController>();
 
         Vector2 myPos = new Vector2(playersController.weaponHolding.transform.position.x, playersController.weaponHolding.transform.position.y);
         Vector2 direction = (target - myPos).normalized;
@@ -371,11 +361,7 @@ public class PlayerController : NetworkBehaviour
 
         projectile.GetComponent<Rigidbody2D>().velocity = direction * 1500f * Time.deltaTime;
 
-        Physics2D.IgnoreCollision(projectile.GetComponent<BoxCollider2D>(), playerThatCalled.GetComponent<PolygonCollider2D>(), true);
-
-        GunScript weaponsScript = playersController.weaponHolding.GetComponent<GunScript>();
-
-        weaponsScript.clipAmmoCount -= 1;
+        Physics2D.IgnoreCollision(projectile.GetComponent<BoxCollider2D>(), playersController.GetComponent<PolygonCollider2D>(), true);
 
         Destroy(projectile, 2f);
     }
@@ -390,29 +376,38 @@ public class PlayerController : NetworkBehaviour
         PlayerController playerCalling = ClientScene.FindLocalObject(netId).GetComponent<PlayerController>();
 
         playerCalling.health -= damageAmount;
+        playerCalling.bloodParticleSystemGO.gameObject.SetActive(true);
+        StartCoroutine(StopParticle());
+    }
+
+    IEnumerator StopParticle() {
+        yield return new WaitForSeconds(0.5f);
+        bloodParticleSystemGO.gameObject.SetActive(false);
     }
 
     #endregion
 
+    [Command]
     private void CmdSetNameplate(NetworkInstanceId _netId) {
         RpcSetNameplate(_netId);
     }
 
+    [ClientRpc]
     private void RpcSetNameplate(NetworkInstanceId _netId) {
         PlayerController playerCalling = ClientScene.FindLocalObject(_netId).GetComponent<PlayerController>();
 
-        playerCalling.nameCanvas.GetComponentInChildren<TextMeshProUGUI>().text = _netId.ToString();
+        playerCalling.nameCanvasInstance.GetComponentInChildren<TextMeshProUGUI>().text = _netId.ToString();
     }
-    
+
     #region Dropping functions
 
     [Command]
-    void CmdTempDrop(NetworkIdentity gunObject, Vector2 target) {
-        RpcTempDrop(gunObject, target);
+    void CmdThrowWeapon(NetworkIdentity gunObject, Vector2 target) {
+        RpcThrowWeapon(gunObject, target);
     }
 
     [ClientRpc]
-    void RpcTempDrop(NetworkIdentity playerCalling, Vector2 target) {
+    void RpcThrowWeapon(NetworkIdentity playerCalling, Vector2 target) {
         GameObject playerCallingObj = ClientScene.FindLocalObject(playerCalling.netId);
 
         //Get the playerCalling's weaponHolding variable.
@@ -422,15 +417,7 @@ public class PlayerController : NetworkBehaviour
         GunScript weaponsScript = playersWeapon.GetComponent<GunScript>();
         weaponsScript.equipped = false;
 
-        if (playersWeapon.transform.name.Contains("AK")) {
-            playersWeapon.GetComponent<SpriteRenderer>().sprite = weaponsScript.akSprites[0];
-        } else if (playersWeapon.transform.name.Contains("M4")) {
-            playersWeapon.GetComponent<SpriteRenderer>().sprite = weaponsScript.m4Sprites[0];
-        } else if (playersWeapon.transform.name.Contains("Micro")) {
-            playersWeapon.GetComponent<SpriteRenderer>().sprite = weaponsScript.microSprites[0];
-        } else if (playersWeapon.transform.name.Contains("Snipper")) {
-            playersWeapon.GetComponent<SpriteRenderer>().sprite = weaponsScript.snipperSprites[0];
-        }
+        weaponsScript.GetComponent<Animator>().SetTrigger("idle");
 
         playersController.holdingGun = false;
 
@@ -455,6 +442,28 @@ public class PlayerController : NetworkBehaviour
         playersController.weaponsGunScript = null;
     }
 
+    [Command]
+    public void CmdDropEverything(NetworkInstanceId _playerDropping) {
+        RpcDropEverything(_playerDropping);
+    }
+
+    [ClientRpc]
+    public void RpcDropEverything(NetworkInstanceId _playerDropping) {
+        Debug.Log("Dropping Everything from Player#: " + _playerDropping.ToString());
+        //Drop weapon
+        PlayerController playerDropping = ClientScene.FindLocalObject(_playerDropping).GetComponent<PlayerController>();
+
+        Destroy(playerDropping.GetComponent<HingeJoint2D>());
+        if (playerDropping.weaponsGunScript != null) {
+            playerDropping.weaponsGunScript.equipped = false;
+            playerDropping.holdingGun = false;
+            playerDropping.weaponsGunScript.GetComponent<Animator>().SetTrigger("idle");
+            playerDropping.weaponsGunScript.rb.velocity += new Vector2(Random.Range(0.5f, 2.0f), Random.Range(0.5f, 2.0f));
+            playerDropping.weaponsGunScript.rb.angularVelocity = 15.0f;
+        }
+        //Drop ammo
+        playerDropping.nameCanvasInstance.GetComponentInChildren<TextMeshProUGUI>().text = "";
+    }
     #endregion
 
     #endregion
@@ -504,6 +513,7 @@ public class PlayerController : NetworkBehaviour
         camsController.timeToLerp = time;
         camsController.size = size;
     }
+
     #endregion
 
     void Reload() {
@@ -544,21 +554,25 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    private IEnumerator LerpReloadCircle(float time) {
+    private IEnumerator LerpReloadCircle(float duration) {
 
-        float elapsedTime = 0;
+        float elapsedTime = 0.0f;
+        reloadCircle.fillAmount = 0.0f;
+        float multipliedDuration = duration * 4;
 
-        while (elapsedTime < time) {
-            if (reloadCircle.fillAmount != 1.0f) {
-                reloadCircle.fillAmount = Mathf.Lerp(reloadCircle.fillAmount, 1.0f, (elapsedTime / time));
-                elapsedTime += Time.deltaTime;
-                yield return new WaitForEndOfFrame();
-            } else {
+        if (holdingGun) {
+            while (elapsedTime < duration) {
+                reloadCircle.fillAmount = Mathf.MoveTowards(reloadCircle.fillAmount, 1.0f, duration * Time.deltaTime);
+                elapsedTime += Time.deltaTime;  
+                yield return null;
+            }
+
+            reloadCircle.fillAmount = 0.0f;
+
+            if (weaponsGunScript != null) {
+                Debug.Log("Adding ammo!");
                 weaponsGunScript.notReloading = true;
-                reloadCircle.fillAmount = 0.0f;
-
                 Reload();
-                break;
             }
         }
 
@@ -567,3 +581,5 @@ public class PlayerController : NetworkBehaviour
 
     #endregion
 }
+
+

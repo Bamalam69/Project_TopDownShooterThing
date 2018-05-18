@@ -9,36 +9,35 @@ public class GameController : NetworkBehaviour
 
     [SerializeField] private GameObject akPrefab;
     [SerializeField] private GameObject akAmmoPrefab;
-    private List<GameObject> akInstances = new List<GameObject>();
-    private List<GameObject> akAmmoInstances = new List<GameObject>();
+    public List<GameObject> akInstances = new List<GameObject>();
+    public List<GameObject> akAmmoInstances = new List<GameObject>();
 
     [SerializeField] private GameObject m4Prefab;
     [SerializeField] private GameObject m4AmmoPrefab;
-    private List<GameObject> m4Instances = new List<GameObject>();
-    private List<GameObject> m4AmmoInstances = new List<GameObject>();
+    public List<GameObject> m4Instances = new List<GameObject>();
+    public List<GameObject> m4AmmoInstances = new List<GameObject>();
 
     [SerializeField] private GameObject microPrefab;
     [SerializeField] private GameObject microAmmoPrefab;
-    private List<GameObject> microInstances = new List<GameObject>();
-    private List<GameObject> microAmmoInstances = new List<GameObject>();
+    public List<GameObject> microInstances = new List<GameObject>();
+    public List<GameObject> microAmmoInstances = new List<GameObject>();
 
     [SerializeField] private GameObject snipperPrefab;
     [SerializeField] private GameObject snipperAmmoPrefab;
-    private List<GameObject> snipperInstances = new List<GameObject>();
-    private List<GameObject> snipperAmmoInstances = new List<GameObject>();
+    public List<GameObject> snipperInstances = new List<GameObject>();
+    public List<GameObject> snipperAmmoInstances = new List<GameObject>();
 
     [SerializeField] private GameObject houseRoot;
     [SerializeField] private List<GameObject> weaponSpawnerObjs = new List<GameObject>();
 
     [SerializeField] private GameObject windowPrefab;
-    private List<GameObject> windowInstances = new List<GameObject>();
+    public List<GameObject> windowInstances = new List<GameObject>();
 
     #endregion
 
     #region funcs
 
     public override void OnStartServer() {
-        DontDestroyOnLoad(this.gameObject);
         Debug.Log("Spawning weapons!");
         SpawnWeapons();
         SpawnWindows();
@@ -48,10 +47,9 @@ public class GameController : NetworkBehaviour
         GameObject[] weaponSpawners = GameObject.FindGameObjectsWithTag("WeaponSpawner");
 
         weaponSpawnerObjs.AddRange(weaponSpawners);
-        int i = 1;
 
         foreach (GameObject weaponSpawnerObj in weaponSpawnerObjs) {
-            int weaponChance = Random.Range(1, 14);
+            int weaponChance = Random.Range(0, 14);
 
             if (weaponChance >= 1 && weaponChance <= 4) {
                 microInstances.Add((GameObject)Instantiate(microPrefab, weaponSpawnerObj.transform.position, Quaternion.Euler(new Vector3(0.0f, 0.0f, Random.rotation.eulerAngles.z))));
@@ -70,8 +68,6 @@ public class GameController : NetworkBehaviour
 
                 snipperAmmoInstances.Add((GameObject)Instantiate(snipperAmmoPrefab, weaponSpawnerObj.transform.TransformPoint(Random.insideUnitCircle * 0.75f), Quaternion.Euler(new Vector3(0.0f, 0.0f, Random.rotation.eulerAngles.z))));
             }
-
-            i++;
         }
 
 
@@ -115,7 +111,7 @@ public class GameController : NetworkBehaviour
         windowSpawnObjs.AddRange(GameObject.FindGameObjectsWithTag("WindowSpawner"));
         windowSpawnObjs.AddRange(GameObject.FindGameObjectsWithTag("WindowSpawner2"));
 
-        foreach(GameObject obj in windowSpawnObjs) {
+        foreach (GameObject obj in windowSpawnObjs) {
             windowInstances.Add(Instantiate(windowPrefab, obj.transform.position, Quaternion.Euler(new Vector3(0.0f, 0.0f, 90.0f))) as GameObject);
             if (obj.CompareTag("WindowSpawner2")) {
                 windowInstances[windowInstances.Count - 1].transform.rotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, 0.0f));

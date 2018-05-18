@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 114096458281126408}
   m_Layer: 0
   m_Name: NetworkManager
-  m_TagString: Untagged
+  m_TagString: NetworkManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -65,7 +65,7 @@ MonoBehaviour:
   m_AutoCreatePlayer: 1
   m_PlayerSpawnMethod: 0
   m_OfflineScene: Startup
-  m_OnlineScene: prototyping
+  m_OnlineScene: Main
   m_SpawnPrefabs:
   - {fileID: 1228850217338862, guid: 692a1f7372cf29b49bbae778889fbd2f, type: 2}
   - {fileID: 1594802251918088, guid: ba6dd90fb09e9954da76e1d2f8e7ffde, type: 2}
@@ -125,7 +125,7 @@ MonoBehaviour:
   m_UseSimulator: 0
   m_SimulatedLatency: 1
   m_PacketLossPercentage: 0
-  m_MaxBufferedPackets: 16
+  m_MaxBufferedPackets: 17
   m_AllowFragmentation: 1
   m_MatchHost: mm.unet.unity3d.com
   m_MatchPort: 443
@@ -133,4 +133,3 @@ MonoBehaviour:
   matchSize: 4
   isNetworkActive: 0
   matchMaker: {fileID: 0}
-  playerNetIds: 

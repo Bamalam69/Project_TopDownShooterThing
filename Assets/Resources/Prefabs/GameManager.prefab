@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: 114967874542984206}
   m_Layer: 0
   m_Name: GameManager
-  m_TagString: Untagged
+  m_TagString: GameController
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -35,7 +35,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1436766900850678}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6.7400002, y: -2.7600002, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -87,18 +87,27 @@ MonoBehaviour:
   akPrefab: {fileID: 1228850217338862, guid: 692a1f7372cf29b49bbae778889fbd2f, type: 2}
   akAmmoPrefab: {fileID: 1486826368039518, guid: 9dbba69e1c9fc7c43976664b7b9f7664,
     type: 2}
+  akInstances: []
+  akAmmoInstances: []
   m4Prefab: {fileID: 1420831022960606, guid: d06b3205fd1676947985486300e73047, type: 2}
   m4AmmoPrefab: {fileID: 1870898775993344, guid: b463fa977ce907b45a05f7900ebce451,
     type: 2}
+  m4Instances: []
+  m4AmmoInstances: []
   microPrefab: {fileID: 1142322189103286, guid: 63ef8a1a3259e8e4a863e5c8cfb0ee67,
     type: 2}
   microAmmoPrefab: {fileID: 1016271075083290, guid: 5a683928938e3034bbb99faf3620f4e1,
     type: 2}
+  microInstances: []
+  microAmmoInstances: []
   snipperPrefab: {fileID: 1012920446888678, guid: cbed90a72d838294b8e98a7237f9f3ec,
     type: 2}
   snipperAmmoPrefab: {fileID: 1293054296457472, guid: fc7f97206fea4b649b31facceb5d03b4,
     type: 2}
+  snipperInstances: []
+  snipperAmmoInstances: []
   houseRoot: {fileID: 0}
   weaponSpawnerObjs: []
   windowPrefab: {fileID: 1062596892999796, guid: 29d48cd6c1ab13141a01c85e0b34a806,
     type: 2}
+  windowInstances: []

@@ -5,7 +5,9 @@ using UnityEngine.Networking;
 
 public class AmmoScript : NetworkBehaviour
 {
+#pragma warning disable 0414
     [SyncVar] private float ammoAmountToGive;
+#pragma warning restore 0414
     [SyncVar] public float ammoAmount;
     [SyncVar] [SerializeField] private GunScript.GunTypes ammoType;
 

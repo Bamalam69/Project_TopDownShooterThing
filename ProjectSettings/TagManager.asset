@@ -22,6 +22,8 @@ TagManager:
   - StartHost
   - JoinGame
   - DisconnectButton
+  - NetworkManager
+  - ParticlePlayer
   layers:
   - Default
   - TransparentFX

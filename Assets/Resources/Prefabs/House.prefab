@@ -2380,7 +2380,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4991660460951712}
-  - component: {fileID: 114943453287727926}
   m_Layer: 0
   m_Name: House
   m_TagString: House
@@ -9385,7 +9384,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1458085493979098}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.78, y: 6.24, z: 0}
+  m_LocalPosition: {x: 4.7, y: 4.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4339847676732952}
@@ -34771,19 +34770,6 @@ MonoBehaviour:
   - {fileID: 1463032286494428}
   - {fileID: 1597221457549476}
   - {fileID: 1731587543762168}
---- !u!114 &114943453287727926
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1458085493979098}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9aa61dd783df81148b41b51fde862a34, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  windows:
-  - {fileID: 1062596892999796, guid: 29d48cd6c1ab13141a01c85e0b34a806, type: 2}
 --- !u!114 &114958895032020894
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -35091,7 +35077,7 @@ HingeJoint2D:
   m_BreakTorque: Infinity
   m_AutoConfigureConnectedAnchor: 1
   m_Anchor: {x: 0, y: 0}
-  m_ConnectedAnchor: {x: 4.1730003, y: 9.9}
+  m_ConnectedAnchor: {x: 4.093, y: 8.46}
   m_UseMotor: 0
   m_Motor:
     m_MotorSpeed: 0

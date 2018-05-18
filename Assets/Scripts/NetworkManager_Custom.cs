@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using TMPro;
 
 public class NetworkManager_Custom : NetworkManager {
 
-    public List<int> playerNetIds = new List<int>();
+    public NetworkInstanceId localPlayer; //Local player. Gets found once connected.
 
-	public void StartupHost() {
+    public void StartupHost() {
         SetPort();
         NetworkManager.singleton.StartHost();
     }
@@ -30,27 +31,64 @@ public class NetworkManager_Custom : NetworkManager {
 
     private void OnLevelWasLoaded(int level) {
         if (level == 0) {
-            SetupMenuSceneButtons();
+            StartCoroutine(SetupMenuSceneButtons());
         } else {
-            SetupGameSceneButtons();
+            StartCoroutine(SetupGameSceneButtons());
         }
     }
 
-    void SetupMenuSceneButtons() {
-        GameObject.FindGameObjectWithTag("StartHost").GetComponent<Button>().onClick.RemoveAllListeners();
-        GameObject.FindGameObjectWithTag("StartHost").GetComponent<Button>().onClick.AddListener(StartupHost);
+    IEnumerator SetupMenuSceneButtons() {
+        yield return new WaitForSeconds(0.3f);
+        Button startHostButton = GameObject.FindGameObjectWithTag("StartHost").GetComponent<Button>();
+        startHostButton.onClick.RemoveAllListeners();
+        startHostButton.onClick.AddListener(StartupHost);
 
-        GameObject.FindGameObjectWithTag("JoinGame").GetComponent<Button>().onClick.RemoveAllListeners();
-        GameObject.FindGameObjectWithTag("JoinGame").GetComponent<Button>().onClick.AddListener(JoinGame);
+        Button joinGame = GameObject.FindGameObjectWithTag("JoinGame").GetComponent<Button>();
+        joinGame.onClick.RemoveAllListeners();
+        joinGame.onClick.AddListener(JoinGame);
     }
 
-    void SetupGameSceneButtons() {
+    IEnumerator SetupGameSceneButtons() {
+        yield return new WaitForSeconds(0.3f);
         GameObject.FindGameObjectWithTag("DisconnectButton").GetComponent<Button>().onClick.RemoveAllListeners();
-        GameObject.FindGameObjectWithTag("DisconnectButton").GetComponent<Button>().onClick.AddListener(NetworkManager.singleton.StopHost);
+        GameObject.FindGameObjectWithTag("DisconnectButton").GetComponent<Button>().onClick.AddListener(StartDisconnect);
+
+        Button particlePlayButton = GameObject.FindGameObjectWithTag("ParticlePlayer").GetComponent<Button>();
+        particlePlayButton.onClick.AddListener(PlayParticle);
     }
 
-    public override void OnClientDisconnect(NetworkConnection conn) {
-        Debug.Log(conn.clientOwnedObjects);
+    void PlayParticle() {
+        PlayerController playersController = ClientScene.FindLocalObject(localPlayer).GetComponent<PlayerController>();
+        if (playersController == null) {
+            return;
+        } else {
+            playersController.bloodParticleSystemGO.SetActive(true);
+            StartCoroutine(StopParticle());
+        }
     }
 
+    IEnumerator StopParticle() {
+        yield return new WaitForSeconds(0.5f);
+
+        PlayerController playersController = ClientScene.FindLocalObject(localPlayer).GetComponent<PlayerController>();
+
+        if (playersController != null) {
+            playersController.bloodParticleSystemGO.gameObject.SetActive(false);
+        }
+    }
+
+    void PreDisconnect() {
+        StartDisconnect();
+    }
+
+    void StartDisconnect() {
+        StartCoroutine(Disconnect());
+    }
+
+    IEnumerator Disconnect() {
+        Debug.Log("Disconnecting!");
+        ClientScene.FindLocalObject(localPlayer).GetComponent<PlayerController>().CmdDropEverything(localPlayer);
+        yield return new WaitForSeconds(0.2f);
+        NetworkManager.singleton.StopHost();
+    }    
 }

@@ -20,11 +20,12 @@ GameObject:
   m_Component:
   - component: {fileID: 4859288259880744}
   - component: {fileID: 212917877125223762}
-  - component: {fileID: 61984775626313316}
   - component: {fileID: 114953155590136966}
   - component: {fileID: 114941768070962892}
   - component: {fileID: 50076077147442278}
   - component: {fileID: 114833482505557484}
+  - component: {fileID: 61583828215726174}
+  - component: {fileID: 95156824929006732}
   m_Layer: 9
   m_Name: Snipper
   m_TagString: Gun
@@ -65,7 +66,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!61 &61984775626313316
+--- !u!61 &61583828215726174
 BoxCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -77,7 +78,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.31049585, y: 0}
+  m_Offset: {x: 0.28542185, y: 0.031892523}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.25, y: 0.50000054}
@@ -88,8 +89,25 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.7790084, y: 0.16666667}
+  m_Size: {x: 1.7708435, y: 0.40288112}
   m_EdgeRadius: 0
+--- !u!95 &95156824929006732
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1012920446888678}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 5edc62defcc800d4fb68980f2a14e89b, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
 --- !u!114 &114833482505557484
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -136,7 +154,6 @@ MonoBehaviour:
   justDropped: 0
   colToStopIgnoring: {fileID: 0}
   clipAmmoCount: 0
-  otherAmmoCount: 0
   clipSize: 0
   reloadTime: 0
   notReloading: 0

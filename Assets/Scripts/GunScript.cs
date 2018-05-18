@@ -8,7 +8,7 @@ public class GunScript : NetworkBehaviour
 
 #region vars
 
-    private Rigidbody2D rb;
+    public Rigidbody2D rb;
     private Transform playerParent;
     public Camera cam;
 
@@ -37,9 +37,9 @@ public class GunScript : NetworkBehaviour
     private Quaternion angle;
 
     [SyncVar] public float clipAmmoCount;
-    [SyncVar] public float clipSize;
-    [SyncVar] public float reloadTime;
-    [SyncVar] public bool notReloading;
+    public float clipSize;
+    public float reloadTime;
+    public bool notReloading;
 
     #endregion
 
@@ -80,7 +80,7 @@ public class GunScript : NetworkBehaviour
             angle = Quaternion.Euler(0, 0, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
         } else {
             //playerEquippedTo = null;
-           if (justDropped && rb.velocity.magnitude < 1.5f) {
+           if (justDropped && rb.velocity.magnitude < 0.75f) {
                 CmdStopIgnoringCols(this.netId, playersPlayerController.netId);
                justDropped = false;
            }
