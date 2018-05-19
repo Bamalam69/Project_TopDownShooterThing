@@ -4,10 +4,28 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
-public class NetworkManager_Custom : NetworkManager {
+public class NetworkManager_Custom : NetworkManager
+{
 
     public NetworkInstanceId localPlayer; //Local player. Gets found once connected.
+
+    private void OnEnable() {
+        SceneManager.sceneLoaded += OnLevelFinishedLoading;
+    }
+
+    private void OnDisable() {
+        SceneManager.sceneLoaded -= OnLevelFinishedLoading;
+    }
+
+    private void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode) {
+        if (scene.buildIndex == 0) {
+            StartCoroutine(SetupMenuSceneButtons());
+        } else {
+            StartCoroutine(SetupGameSceneButtons());
+        }
+    }
 
     public void StartupHost() {
         SetPort();
@@ -27,14 +45,6 @@ public class NetworkManager_Custom : NetworkManager {
 
     void SetPort() {
         NetworkManager.singleton.networkPort = 7777;
-    }
-
-    private void OnLevelWasLoaded(int level) {
-        if (level == 0) {
-            StartCoroutine(SetupMenuSceneButtons());
-        } else {
-            StartCoroutine(SetupGameSceneButtons());
-        }
     }
 
     IEnumerator SetupMenuSceneButtons() {
@@ -62,6 +72,7 @@ public class NetworkManager_Custom : NetworkManager {
         if (playersController == null) {
             return;
         } else {
+            Debug.Log("Playing particle!");
             playersController.bloodParticleSystemGO.SetActive(true);
             StartCoroutine(StopParticle());
         }
@@ -90,5 +101,5 @@ public class NetworkManager_Custom : NetworkManager {
         ClientScene.FindLocalObject(localPlayer).GetComponent<PlayerController>().CmdDropEverything(localPlayer);
         yield return new WaitForSeconds(0.2f);
         NetworkManager.singleton.StopHost();
-    }    
+    }
 }

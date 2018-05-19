@@ -6,7 +6,7 @@ using UnityEngine.Networking;
 public class GunScript : NetworkBehaviour
 {
 
-#region vars
+    #region vars
 
     public Rigidbody2D rb;
     private Transform playerParent;
@@ -47,19 +47,22 @@ public class GunScript : NetworkBehaviour
 
     void Awake() {
         rb = GetComponent<Rigidbody2D>();
-        
+
         boxCol = GetComponent<BoxCollider2D>();
         justDropped = false;
 
-        if (gunType == GunTypes.AK || gunType == GunTypes.M4) {
+        if (gunType == GunTypes.AK) {
             clipAmmoCount = clipSize = 30;
-            reloadTime = 1.5f;
+            reloadTime = 30.0f;
+        } else if (gunType == GunTypes.M4) {
+            clipAmmoCount = clipSize = 30;
+            reloadTime = 40.0f;
         } else if (gunType == GunTypes.Micro) {
             clipAmmoCount = clipSize = 25;
-            reloadTime = 0.5f;
+            reloadTime = 75.0f;
         } else if (gunType == GunTypes.Snipper) {
             clipAmmoCount = clipSize = 5;
-            reloadTime = 2.5f;
+            reloadTime = 20.0f;
         }
     }
 
@@ -80,15 +83,15 @@ public class GunScript : NetworkBehaviour
             angle = Quaternion.Euler(0, 0, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
         } else {
             //playerEquippedTo = null;
-           if (justDropped && rb.velocity.magnitude < 0.75f) {
+            if (justDropped && rb.velocity.magnitude < 0.75f) {
                 CmdStopIgnoringCols(this.netId, playersPlayerController.netId);
-               justDropped = false;
-           }
+                justDropped = false;
+            }
         }
     }
     #endregion
 
-#region custom Functions
+    #region custom Functions
 
     [Command]
     private void CmdStopIgnoringCols(NetworkInstanceId objCalling, NetworkInstanceId objToStopIgnoring) {
@@ -114,5 +117,5 @@ public class GunScript : NetworkBehaviour
         rb.MoveRotation(angle.eulerAngles.z);
     }
 
-#endregion
+    #endregion
 }

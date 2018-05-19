@@ -517,7 +517,7 @@ MonoBehaviour:
     type: 2}
   health: 0
   healthSlider: {fileID: 114649738191237732}
-  bloodParticleSystem: {fileID: 198511239364740356}
+  bloodParticleSystemGO: {fileID: 0}
   nameCanvasPrefab: {fileID: 1853254502042246, guid: d12874c7e504a8e44a3d5e2acd5eb469,
     type: 2}
   editorDebug: 0
@@ -878,7 +878,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: 0

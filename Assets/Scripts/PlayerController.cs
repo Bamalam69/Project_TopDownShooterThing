@@ -59,6 +59,8 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] public GameObject bloodParticleSystemGO;
     [SerializeField] private GameObject nameCanvasPrefab;
 
+    private bool reloading;
+
     [SerializeField] private bool editorDebug;
 
     [SerializeField] Collider2D debugCol;
@@ -201,28 +203,24 @@ public class PlayerController : NetworkBehaviour
 
                 if (Input.GetKeyDown(KeyCode.R)) {
                     if (weaponsGunScript.gunType == GunScript.GunTypes.AK) {
-                        if (akAmmoCarrying > 0) {
+                        if (akAmmoCarrying > 0 && !reloading) {
                             weaponsGunScript.notReloading = false;
                             StartCoroutine(LerpReloadCircle(weaponsGunScript.reloadTime));
-                            Reload();
                         }
                     } else if (weaponsGunScript.gunType == GunScript.GunTypes.M4) {
-                        if (m4AmmoCarrying > 0) {
+                        if (m4AmmoCarrying > 0 && !reloading) {
                             weaponsGunScript.notReloading = false;
                             StartCoroutine(LerpReloadCircle(weaponsGunScript.reloadTime));
-                            Reload();
                         }
                     } else if (weaponsGunScript.gunType == GunScript.GunTypes.Micro) {
-                        if (microAmmoCarrying > 0) {
+                        if (microAmmoCarrying > 0 && !reloading) {
                             weaponsGunScript.notReloading = false;
                             StartCoroutine(LerpReloadCircle(weaponsGunScript.reloadTime));
-                            Reload();
                         }
                     } else if (weaponsGunScript.gunType == GunScript.GunTypes.Snipper) {
-                        if (snipperAmmoCarrying > 0) {
+                        if (snipperAmmoCarrying > 0 && !reloading) {
                             weaponsGunScript.notReloading = false;
                             StartCoroutine(LerpReloadCircle(weaponsGunScript.reloadTime));
-                            Reload();
                         }
                     }
                 }
@@ -262,7 +260,7 @@ public class PlayerController : NetworkBehaviour
 
         //Debugging stuff
         if (editorDebug) {
-            Debug.Log(Physics2D.GetIgnoreCollision(this.GetComponent<PolygonCollider2D>(), debugCol));
+            Debug.Log(bloodParticleSystemGO);
         }
     }
 
@@ -556,15 +554,13 @@ public class PlayerController : NetworkBehaviour
 
     private IEnumerator LerpReloadCircle(float duration) {
 
-        float elapsedTime = 0.0f;
         reloadCircle.fillAmount = 0.0f;
-        float multipliedDuration = duration * 4;
+        reloading = true;
 
         if (holdingGun) {
-            while (elapsedTime < duration) {
-                reloadCircle.fillAmount = Mathf.MoveTowards(reloadCircle.fillAmount, 1.0f, duration * Time.deltaTime);
-                elapsedTime += Time.deltaTime;  
-                yield return null;
+            while (reloadCircle.fillAmount != 1.0f) {
+                reloadCircle.fillAmount += duration / 1000.0f;
+                yield return new WaitForEndOfFrame();
             }
 
             reloadCircle.fillAmount = 0.0f;
@@ -576,7 +572,7 @@ public class PlayerController : NetworkBehaviour
             }
         }
 
-
+        reloading = false;
     }
 
     #endregion
